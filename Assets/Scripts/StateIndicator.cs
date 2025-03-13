@@ -36,6 +36,6 @@ public class StateIndicator : MonoBehaviour
 
     public void Billboard()
     {
-        transform.LookAt(Camera.main.transform.position, -Vector3.up);
+        transform.LookAt(Camera.main.transform.position, Vector3.up);
     }
 }
