@@ -12,6 +12,7 @@ public class Spectator : MonoBehaviour
     private Vector2 rotation = new Vector2(0, 0);
 
     [Header("Movement")]
+    public bool canMove = true;
     public float movementSpeed = 10.0f;
     private Vector2 movementInput = new Vector2(0, 0);
     private Vector3 movementDirection = new Vector3(0, 0, 0);
@@ -64,6 +65,7 @@ public class Spectator : MonoBehaviour
         GetKeyboardInput();
 
         RotateCamera();
-        MoveSpectator();
+        if(canMove)
+            MoveSpectator();
     }
 }

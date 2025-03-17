@@ -8,6 +8,8 @@ public class StateIndicator : MonoBehaviour
     public int Current { get; private set; } = 0;
     private SpriteRenderer spriteRenderer;
 
+    public Transform mainCamera;
+
     public void ChangeSprite(int index)
     {
         if (index < indicators.Count())
@@ -27,6 +29,8 @@ public class StateIndicator : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = indicators[0];
+
+        mainCamera = Camera.main.transform;
     }
 
     private void Update()
@@ -36,6 +40,6 @@ public class StateIndicator : MonoBehaviour
 
     public void Billboard()
     {
-        transform.LookAt(Camera.main.transform.position, Vector3.up);
+        transform.LookAt(mainCamera.position, Vector3.up);
     }
 }

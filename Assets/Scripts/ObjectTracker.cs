@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -27,9 +28,12 @@ public class ObjectTracker : MonoBehaviour
     public StateIndicator stateIndicator;
     public bool isActive = true;
     private bool isActiveBeforeChange = true;
+
+    public bool movementInOutEasing = false,
+                indicatorActive = true;
     public bool StateChanged { get; private set; } = false;
 
-    public Transform neckBone, headBone;
+    public Transform neckBone, headBone, headBoneEnd;
     public Vector3 neckRotationAxis = new Vector3(0, 1, 0);
     public Vector3 headRotationAxis = new Vector3(1, 0, 0);
     private Quaternion restNeckRotation, restHeadRotation;
@@ -44,20 +48,32 @@ public class ObjectTracker : MonoBehaviour
     public float refreshSearchInterval = 0.3f, checkInBoundsInterval;
     public float detectionRange = 10.0f;
 
+    // detected state
+    private bool outOfBoundsReached = false;
+
     // reset state
     public float resetDuration = 2.0f, timeToBeLost = 3.0f;
+
+    public List<Transform> raycastPoints = new List<Transform>();
 
     private void OnValidate()
     {
         Vector3.Normalize(neckRotationAxis);
         detectionLayer = LayerMask.GetMask(detectionLayerName);
 
+        if (headBone == null && headBoneEnd == null && neckBone != null)
+        {
+            headBone = neckBone.GetChild(0);
+            headBoneEnd = neckBone.GetChild(0);
+        }
+
         if (isActive != isActiveBeforeChange)
-            Activate();
+            Activate(isActive);
     }
 
-    public void Activate()
+    public void Activate(bool state)
     {
+        isActive = state;
         StateChanged = true;
 
         if (isActive)
@@ -68,10 +84,19 @@ public class ObjectTracker : MonoBehaviour
         isActiveBeforeChange = isActive;
     }
 
+    public void ResetState()
+    {
+        State = TrackerState.Lost;
+        StateChanged = true;
+    }
+
     public void Start() 
     {
         restNeckRotation = neckBone.localRotation;
         restHeadRotation = headBone.localRotation;
+
+        if (raycastPoints.Count < 1)
+            raycastPoints = headBoneEnd.GetComponentsInChildren<Transform>().ToList();
 
         if (isActive)
             State = TrackerState.Search;
@@ -83,14 +108,8 @@ public class ObjectTracker : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //Debug.Log("neck: " + neckBone.localRotation.eulerAngles);
-        //Debug.Log("head: " + headBone.localEulerAngles);
-        //Debug.Log("---");
-        //Debug.Log(Transf3D.CalculateAngle(neckBone.localRotation, restNeckRotation, new Vector3(1, 1, 1)));
-        //Debug.Log(Transf3D.CalculateAngle(headBone.localRotation, restHeadRotation, new Vector3(1, 1, 1)));
-
         // only visible in editor
-        Debug.DrawRay(headBone.position, headBone.TransformDirection(Vector3.up) * detectionRange, Color.blue);
+        DebugDrawRays();
 
         if (StateChanged)
         {
@@ -109,8 +128,8 @@ public class ObjectTracker : MonoBehaviour
                     stateIndicator.ChangeSprite((int)TrackerState.Detected);
                     break;
                 case TrackerState.Lost:
-                    StartCoroutine(IdleSearchForTarget());
                     StartCoroutine(ResetRotationsAnimation());
+                    StartCoroutine(IdleSearchForTarget()); 
                     stateIndicator.ChangeSprite((int)TrackerState.Lost);
                     break;
                 default:
@@ -124,6 +143,16 @@ public class ObjectTracker : MonoBehaviour
     }
 
     #region animation_states
+
+    private void DebugDrawRays()
+    {
+        //Debug.DrawRay(headBone.position, headBone.TransformDirection(Vector3.up) * detectionRange, Color.blue);
+
+        foreach(Transform p in raycastPoints)
+        {
+            Debug.DrawRay(headBoneEnd.position, (p.position - headBone.position).normalized * detectionRange, Color.red);
+        }
+    }
 
     private IEnumerator IdleSearchAnimation()
     {
@@ -152,17 +181,15 @@ public class ObjectTracker : MonoBehaviour
 
     private IEnumerator IdleSearchForTarget()
     {
-        RaycastHit hit;
-        Ray visionRay;
+        GameObject detected = null;
 
         while(true)
         {
-            visionRay = new Ray(headBone.position, headBone.TransformDirection(Vector3.up));
-
-            if (Physics.Raycast(visionRay, out hit, detectionRange, detectionLayer))
+            detected = SearchWithRaycasts();
+            
+            if (detected != null)
             {
-                FocusedObject = hit.collider.gameObject;
-
+                FocusedObject = detected;
                 Debug.Log(FocusedObject.name);
                 break;
             }
@@ -174,10 +201,24 @@ public class ObjectTracker : MonoBehaviour
         StateChanged = true;
     }
 
+    private GameObject SearchWithRaycasts()
+    {
+        Ray ray;
+        RaycastHit hit;
+
+        foreach (Transform p in raycastPoints)
+        {
+            ray = new Ray(headBoneEnd.position, p.position - headBone.position);
+
+            if (Physics.Raycast(ray, out hit, detectionRange) && hit.collider.gameObject.layer == LayerMask.NameToLayer(detectionLayerName))
+                return hit.collider.gameObject;
+        }
+
+        return null;
+    }
+
     private IEnumerator ResetRotationsAnimation()
     {
-        FocusedObject = null;
-
         // wait for object to return in area
         yield return new WaitForSecondsRealtime(timeToBeLost);
 
@@ -197,10 +238,35 @@ public class ObjectTracker : MonoBehaviour
 
     private IEnumerator FollowTarget()
     {
+        Quaternion targetRotationNeck, targetRotationHead;
+        float angleNeck = 0f,
+              angleHead = 0f;
+
         while (true)
         {
-            Coroutine neckMovement = StartCoroutine(Transf3D.RotateOverTime(neckBone, refreshSearchInterval, neckBone.localRotation, CalculateLocalNeckLookAtTarget()));
-            Coroutine headMovement = StartCoroutine(Transf3D.RotateOverTime(headBone, refreshSearchInterval, headBone.localRotation, CalculateLocalHeadLookAtTarget()));
+            outOfBoundsReached = false;
+            targetRotationNeck = CalculateLocalNeckLookAtTarget();
+            targetRotationHead = CalculateLocalHeadLookAtTarget();
+
+            angleNeck = Transf3D.CalculateAngleSigned(targetRotationNeck, restNeckRotation, Vector3.one);
+            angleHead = Transf3D.CalculateAngleSigned(targetRotationHead, restHeadRotation, Vector3.one);
+
+            // target out of neck bone bounds (default: horizontally)
+            if (Mathf.Abs(angleNeck) > neckBoneBoundMax)
+            {
+                targetRotationNeck = restNeckRotation * Quaternion.AngleAxis(neckBoneBoundMax * Mathf.Sign(angleNeck), neckRotationAxis);
+                outOfBoundsReached = true;
+            }
+
+            // target out of head bone bounds (default: vertically)
+            if (Mathf.Abs(angleHead) > headBoneBoundMax)
+            {
+                targetRotationHead = restHeadRotation * Quaternion.AngleAxis(headBoneBoundMax * Mathf.Sign(angleHead), headRotationAxis);
+                outOfBoundsReached = true;
+            }
+
+            Coroutine neckMovement = StartCoroutine(Transf3D.RotateOverTime(neckBone, refreshSearchInterval, neckBone.localRotation, targetRotationNeck));
+            Coroutine headMovement = StartCoroutine(Transf3D.RotateOverTime(headBone, refreshSearchInterval, headBone.localRotation, targetRotationHead));
 
             // resume after parallel coroutines finish
             yield return neckMovement;
@@ -220,6 +286,7 @@ public class ObjectTracker : MonoBehaviour
         Quaternion targetRotation = neckBone.localRotation * Quaternion.AngleAxis(neckFollowRotationAngle, neckRotationAxis);
         return targetRotation;
     }
+    
     private Quaternion CalculateLocalHeadLookAtTarget()
     {
         Vector3 headDirection = headBone.InverseTransformPoint(FocusedObject.transform.position);
@@ -232,21 +299,52 @@ public class ObjectTracker : MonoBehaviour
     private IEnumerator CheckIfFocusedInBounds()
     {
         Ray visionRay;
+        RaycastHit hit;
+        bool isHit, isInVision;
 
-        while(true)
+        while (true)
         {
-            visionRay = new Ray(headBone.position, FocusedObject.transform.position - headBone.position);
+            isInVision = IsFocusedInVision();
 
-            if (Physics.Raycast(visionRay, detectionRange, detectionLayer) == false ||
-                Transf3D.CalculateAngle(neckBone.localRotation, restNeckRotation, Vector3.one) > neckBoneBoundMax ||
-                Transf3D.CalculateAngle(headBone.localRotation, restHeadRotation, Vector3.one) > headBoneBoundMax)
+            if (outOfBoundsReached == true && isInVision == false)
             {
-                State = TrackerState.Lost;
-                StateChanged = true;
+                Debug.Log("target lost: out of bounds");
+                break;
+            }
+            else
+            {
+                visionRay = new Ray(headBoneEnd.position, FocusedObject.transform.position - headBoneEnd.position);
+                isHit = Physics.Raycast(visionRay, out hit, detectionRange);
+
+                if ((isHit == false || hit.collider.gameObject != FocusedObject) && isInVision == false)
+                {
+                    Debug.Log("target lost: covered, not visible");
+                    break;
+                }
             }
 
             yield return new WaitForSeconds(checkInBoundsInterval);
         }
+
+        FocusedObject = null;
+        State = TrackerState.Lost;
+        StateChanged = true;
+    }
+
+    private bool IsFocusedInVision()
+    {
+        Ray ray;
+        RaycastHit hit;
+
+        foreach(Transform p in raycastPoints)
+        {
+            ray = new Ray(headBoneEnd.position, p.position - headBone.position);
+
+            if (Physics.Raycast(ray, out hit, detectionRange) && hit.collider.gameObject == FocusedObject)
+                return true;
+        }
+
+        return false;
     }
 
     #endregion
