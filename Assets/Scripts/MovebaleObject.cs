@@ -7,15 +7,15 @@ public class MovableObject : MonoBehaviour
     public float movementSpeed = 10.0f;
     private Vector2 movementInput = new Vector2(0, 0);
     private Vector3 movementDirection = new Vector3(0, 0, 0);
-    private Rigidbody rigidbody;
+    private Rigidbody rb;
 
     private void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
 
-        rigidbody.isKinematic = false;
-        rigidbody.useGravity = true;
-        rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+        rb.isKinematic = false;
+        rb.useGravity = true;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     private void GetKeyboardInput()
@@ -31,7 +31,7 @@ public class MovableObject : MonoBehaviour
 
         movementDirection = (forward + right).normalized * movementSpeed * Time.deltaTime;
 
-        rigidbody.MovePosition(rigidbody.position + movementDirection);
+        rb.MovePosition(rb.position + movementDirection);
     }
 
     private void FixedUpdate()

@@ -359,24 +359,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85f8386d54b8bfc4689d3dccf94c436e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 1
-  stateIndicator: {fileID: 7492674245486784062}
   isActive: 1
+  movementInOutEasing: 0
+  detectionRange: 10
+  observers:
+  - {fileID: 6518055156138150832}
+  rootBone: {fileID: 4273156327496597726}
   neckBone: {fileID: 3395192313757086650}
   headBone: {fileID: 6409969538343291105}
   headBoneEnd: {fileID: 7171473299509336288}
   neckRotationAxis: {x: 0, y: 1, z: 0}
   headRotationAxis: {x: 1, y: 0, z: 0}
-  sideSearchDuration: 5
   neckBoneBoundMax: 60
   headBoneBoundMax: 80
   detectionLayerName: Detectable
+  sideSearchDuration: 5
   refreshSearchInterval: 0.3
-  checkInBoundsInterval: 0
-  detectionRange: 10
+  checkInBoundsInterval: 0.2
+  raycastPoints: []
   resetDuration: 2
   timeToBeLost: 3
-  raycastPoints: []
 --- !u!114 &787271485778317722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -553,7 +555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7899096770760587062}
   - component: {fileID: 1680769707475340149}
-  - component: {fileID: 7492674245486784062}
+  - component: {fileID: 817313306754959424}
   m_Layer: 0
   m_Name: StateIndicator
   m_TagString: Untagged
@@ -631,7 +633,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &7492674245486784062
+--- !u!114 &817313306754959424
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -640,7 +642,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6518055156138150832}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0163fbf93ff98434cbfde421df6c56de, type: 3}
+  m_Script: {fileID: 11500000, guid: 454a558e2512aad41948fa11c9f47359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   indicators:

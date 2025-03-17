@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.UI.Image;
+
 public enum TrackerState
 {
     Off,
@@ -15,60 +13,73 @@ public enum TrackerState
     Lost
 }
 
-public enum TrackerMode
+public interface IObservable
 {
-    Focus,  // awaits idly for any movement in area
-    Scan    // moves in linear animation until target detection
+    void NotifyObservers();
+    void AddObserver(GameObject obj);
+    void DeleteObserver(GameObject obj);
 }
 
-public class ObjectTracker : MonoBehaviour
+public interface IObserver<T>
+{
+    void OnValueChanged(T value);
+}
+
+public class ObjectTracker : MonoBehaviour, IObservable
 {
     public TrackerState State { get; private set; }
-    public TrackerMode mode = TrackerMode.Scan;
-    public StateIndicator stateIndicator;
+
+    [Header("General")]
     public bool isActive = true;
     private bool isActiveBeforeChange = true;
-
-    public bool movementInOutEasing = false,
-                indicatorActive = true;
+    public bool movementInOutEasing = false;
+    public float detectionRange = 10.0f;
     public bool StateChanged { get; private set; } = false;
+    public List<GameObject> observers = new List<GameObject>();
 
+    [Header("Bones")]
+    public Transform rootBone;
     public Transform neckBone, headBone, headBoneEnd;
+
+    [Header("Actions")]
     public Vector3 neckRotationAxis = new Vector3(0, 1, 0);
     public Vector3 headRotationAxis = new Vector3(1, 0, 0);
+    [Range(0f, 180f)]
+    public float neckBoneBoundMax = 60.0f, headBoneBoundMax = 80.0f;
     private Quaternion restNeckRotation, restHeadRotation;
 
-    // search state
-    public float sideSearchDuration = 5.0f;
-    public float neckBoneBoundMax = 60.0f, headBoneBoundMax = 80.0f;
+    [Header("State: Search")]
     public string detectionLayerName = "Detectable";
-    private LayerMask detectionLayer;
+    public float sideSearchDuration = 5.0f;
     //private HashSet<GameObject> objectsInAreaSet = new HashSet<GameObject>();
     public GameObject FocusedObject { get; private set; }
-    public float refreshSearchInterval = 0.3f, checkInBoundsInterval;
-    public float detectionRange = 10.0f;
+    public float refreshSearchInterval = 0.3f, checkInBoundsInterval = 0.2f;
+    public List<Transform> raycastPoints = new List<Transform>();
 
-    // detected state
+    [Header("State: Detected")]
     private bool outOfBoundsReached = false;
 
-    // reset state
-    public float resetDuration = 2.0f, timeToBeLost = 3.0f;
-
-    public List<Transform> raycastPoints = new List<Transform>();
+    [Header("State: Lost")]
+    public float resetDuration = 2.0f;
+    public float timeToBeLost = 3.0f;
 
     private void OnValidate()
     {
         Vector3.Normalize(neckRotationAxis);
-        detectionLayer = LayerMask.GetMask(detectionLayerName);
-
-        if (headBone == null && headBoneEnd == null && neckBone != null)
-        {
-            headBone = neckBone.GetChild(0);
-            headBoneEnd = neckBone.GetChild(0);
-        }
+        Vector3.Normalize(headRotationAxis);
 
         if (isActive != isActiveBeforeChange)
             Activate(isActive);
+    }
+
+    public void FindBones()
+    {
+        if (rootBone != null)
+        {
+            neckBone = rootBone.GetChild(0);
+            headBone = neckBone.GetChild(0);
+            headBoneEnd = neckBone.GetChild(0);
+        }
     }
 
     public void Activate(bool state)
@@ -120,24 +131,21 @@ public class ObjectTracker : MonoBehaviour
                 case TrackerState.Search:
                     StartCoroutine(IdleSearchAnimation());
                     StartCoroutine(IdleSearchForTarget());
-                    stateIndicator.ChangeSprite((int)TrackerState.Search);
                     break;
                 case TrackerState.Detected:
                     StartCoroutine(FollowTarget());
                     StartCoroutine(CheckIfFocusedInBounds());
-                    stateIndicator.ChangeSprite((int)TrackerState.Detected);
                     break;
                 case TrackerState.Lost:
                     StartCoroutine(ResetRotationsAnimation());
                     StartCoroutine(IdleSearchForTarget()); 
-                    stateIndicator.ChangeSprite((int)TrackerState.Lost);
                     break;
                 default:
                 case TrackerState.Off:
-                    stateIndicator.ChangeSprite((int)TrackerState.Off);
                     break;
             }
 
+            NotifyObservers();
             StateChanged = false;
         }
     }
@@ -348,6 +356,25 @@ public class ObjectTracker : MonoBehaviour
     }
 
     #endregion
+
+    public void NotifyObservers()
+    {
+        foreach(GameObject g in observers)
+        {
+            // MonoBehaviour & Unity inspector interface limitations
+            g.SendMessage("OnValueChanged", State);
+        }
+    }
+
+    public void AddObserver(GameObject obj)
+    {
+        observers.Add(obj);
+    }
+
+    public void DeleteObserver(GameObject obj)
+    {
+        observers.Remove(obj);
+    }
 
     /*#region area_objects_detection
 
