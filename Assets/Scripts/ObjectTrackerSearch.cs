@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ObjectTrackerSearch : ObjectTracker, IObservable
+public class ObjectTrackerSearch : ObjectTracker
 {
     [Header("General")]
-    public GameObject FocusedObject { get; private set; }
+    public GameObject FocusedObject { get; protected set; }
     public List<Transform> raycastPoints = new List<Transform>();
 
     [Header("State: Detected")]
@@ -50,12 +50,12 @@ public class ObjectTrackerSearch : ObjectTracker, IObservable
                 StartCoroutine(CheckIfFocusedInBounds());
                 break;
             case TrackerState.Lost:
-                StartCoroutine(ResetRotationsAnimation());
+                StartCoroutine(ResetRotationsAnimation(true, TrackerState.Search));
                 StartCoroutine(IdleSearchForTarget());
                 break;
             default:
             case TrackerState.Off:
-                StartCoroutine(ResetRotationsAnimation(false, false));
+                StartCoroutine(ResetRotationsAnimation(false));
                 break;
         }
     }
@@ -64,8 +64,6 @@ public class ObjectTrackerSearch : ObjectTracker, IObservable
 
     protected override void DebugDrawRays()
     {
-        //Debug.DrawRay(headBone.position, headBone.TransformDirection(Vector3.up) * detectionRange, Color.blue);
-
         foreach(Transform p in raycastPoints)
         {
             Debug.DrawRay(headBoneEnd.position, (p.position - headBoneEnd.position).normalized * detectionRange, Color.red);
@@ -97,7 +95,7 @@ public class ObjectTrackerSearch : ObjectTracker, IObservable
         }
     }
 
-    protected IEnumerator IdleSearchForTarget()
+    protected virtual IEnumerator IdleSearchForTarget()
     {
         GameObject detected = null;
 

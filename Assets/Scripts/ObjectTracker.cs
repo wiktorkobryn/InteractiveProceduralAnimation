@@ -116,14 +116,14 @@ public class ObjectTracker : MonoBehaviour, IObservable
                 break;
             default:
             case TrackerState.Off:
-                StartCoroutine(ResetRotationsAnimation(false, false));
+                StartCoroutine(ResetRotationsAnimation(false));
                 break;
         }
     }
 
     #region animation_states
 
-    protected virtual IEnumerator ResetRotationsAnimation(bool waitForLost = true, bool changeState = true)
+    protected virtual IEnumerator ResetRotationsAnimation(bool waitForLost = true, TrackerState stateToChange = TrackerState.Off)
     {
         // wait for object to return in area
         if(waitForLost)
@@ -139,9 +139,9 @@ public class ObjectTracker : MonoBehaviour, IObservable
         // additional time spacing before search
         yield return new WaitForSecondsRealtime(0.3f);
 
-        if (changeState)
+        if (stateToChange != TrackerState.Off)
         {
-            State = TrackerState.Search;
+            State = stateToChange;
             StateChanged = true;
         }   
     }
