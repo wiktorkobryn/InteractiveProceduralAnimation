@@ -370,13 +370,13 @@ MonoBehaviour:
   headBoneEnd: {fileID: 7171473299509336288}
   neckRotationAxis: {x: 0, y: 1, z: 0}
   headRotationAxis: {x: 1, y: 0, z: 0}
-  neckBoneBoundMax: 60
-  headBoneBoundMax: 80
+  neckBoneBoundMax: 120
+  headBoneBoundMax: 90
   detectionLayerName: Detectable
   sideSearchDuration: 5
+  exclusiveFocused: {fileID: 0}
   refreshSearchInterval: 0.3
   checkInBoundsInterval: 0.2
-  raycastPoints: []
   resetDuration: 2
   timeToBeLost: 3
 --- !u!114 &787271485778317722
@@ -801,7 +801,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dfdaee3db49ae4c49882a59335da8c6f, type: 2}
+  - {fileID: 2100000, guid: bc6264a6042defa4898c6ed40557510f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -924,11 +924,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8632573382280115236}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4273156327496597726}
   m_Father: {fileID: 2549056769603768048}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}

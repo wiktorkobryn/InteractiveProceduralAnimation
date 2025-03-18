@@ -6,14 +6,14 @@ using UnityEngine;
 
 public class ObjectTracker : MonoBehaviour, IObservable
 {
-    public TrackerState State { get; private set; }
+    public TrackerState State { get; protected set; }
 
     [Header("General")]
     public bool isActive = true;
-    private bool isActiveBeforeChange = true;
+    protected bool isActiveBeforeChange = true;
     public bool movementInOutEasing = false;
     public float detectionRange = 10.0f;
-    public bool StateChanged { get; private set; } = false;
+    public bool StateChanged { get; protected set; } = false;
     public List<GameObject> observers = new List<GameObject>();
 
     [Header("Bones")]
@@ -25,22 +25,24 @@ public class ObjectTracker : MonoBehaviour, IObservable
     public Vector3 headRotationAxis = new Vector3(1, 0, 0);
     [Range(0f, 180f)]
     public float neckBoneBoundMax = 60.0f, headBoneBoundMax = 80.0f;
-    private Quaternion restNeckRotation, restHeadRotation;
+    protected Quaternion restNeckRotation, restHeadRotation;
 
     [Header("State: Search")]
     public string detectionLayerName = "Detectable";
     public float sideSearchDuration = 5.0f;
-
     public GameObject exclusiveFocused;
     public float refreshSearchInterval = 0.3f, checkInBoundsInterval = 0.2f;
 
-    private void OnValidate()
+    [Header("State: Lost")]
+    public float resetDuration = 2.0f;
+    public float timeToBeLost = 3.0f;
+
+    protected void OnValidate()
     {
         Vector3.Normalize(neckRotationAxis);
         Vector3.Normalize(headRotationAxis);
 
-        if (isActive != isActiveBeforeChange)
-            Activate(isActive);
+        Activate();
     }
 
     [ContextMenu("FindBones()")]
@@ -54,17 +56,18 @@ public class ObjectTracker : MonoBehaviour, IObservable
         }
     }
 
-    public void Activate(bool state)
+    public virtual void Activate()
     {
-        isActive = state;
-        StateChanged = true;
+        if (isActive != isActiveBeforeChange)
+        {
+            if (isActive)
+                State = TrackerState.Detected;
+            else
+                State = TrackerState.Off;
 
-        if (isActive)
-            State = TrackerState.Search;
-        else
-            State = TrackerState.Off;
-
-        isActiveBeforeChange = isActive;
+            isActiveBeforeChange = isActive;
+            StateChanged = true;
+        }
     }
 
     public void ResetState()
@@ -73,51 +76,82 @@ public class ObjectTracker : MonoBehaviour, IObservable
         StateChanged = true;
     }
 
-    public void Start() 
+    protected virtual void Start() 
     {
         restNeckRotation = neckBone.localRotation;
         restHeadRotation = headBone.localRotation;
 
+        Activate();
         if (isActive)
-            State = TrackerState.Search;
+            State = TrackerState.Detected;
         else
             State = TrackerState.Off;
 
         StateChanged = true;
     }
 
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
         // only visible in editor
-        DebugDrawRays();
+        if(isActive)
+            DebugDrawRays();
 
         if (StateChanged)
         {
             StopAllCoroutines();
 
-            switch(State)
-            {
-                case TrackerState.Detected:
-                    StartCoroutine(FollowTarget());
-                    break;
-                default:
-                case TrackerState.Off:
-                    break;
-            }
+            OnTrackerStateChanged();
 
             NotifyObservers();
             StateChanged = false;
         }
     }
 
+    protected virtual void OnTrackerStateChanged()
+    {
+        switch (State)
+        {
+            case TrackerState.Detected:
+                StartCoroutine(FollowTarget());
+                break;
+            default:
+            case TrackerState.Off:
+                StartCoroutine(ResetRotationsAnimation(false, false));
+                break;
+        }
+    }
+
     #region animation_states
 
-    private void DebugDrawRays()
+    protected virtual IEnumerator ResetRotationsAnimation(bool waitForLost = true, bool changeState = true)
+    {
+        // wait for object to return in area
+        if(waitForLost)
+            yield return new WaitForSecondsRealtime(timeToBeLost);
+
+        // waiting for rotations to finish
+        Coroutine headReset = StartCoroutine(Transf3D.RotateOverTime(headBone, resetDuration, headBone.localRotation, restHeadRotation, movementInOutEasing));
+        Coroutine neckReset = StartCoroutine(Transf3D.RotateOverTime(neckBone, resetDuration, neckBone.localRotation, restNeckRotation, movementInOutEasing));
+
+        yield return headReset;
+        yield return neckReset;
+
+        // additional time spacing before search
+        yield return new WaitForSecondsRealtime(0.3f);
+
+        if (changeState)
+        {
+            State = TrackerState.Search;
+            StateChanged = true;
+        }   
+    }
+
+    protected virtual void DebugDrawRays()
     {
         Debug.DrawRay(headBoneEnd.position, (exclusiveFocused.transform.position - headBone.position).normalized * detectionRange, Color.green);
     }
 
-    private IEnumerator FollowTarget()
+    protected virtual IEnumerator FollowTarget()
     {
         Quaternion targetRotationNeck, targetRotationHead;
         float angleNeck = 0f,
@@ -160,7 +194,7 @@ public class ObjectTracker : MonoBehaviour, IObservable
         StateChanged = true;
     }
 
-    private Quaternion CalculateLocalNeckLookAtTarget()
+    protected virtual Quaternion CalculateLocalNeckLookAtTarget()
     {
         // tracked position in local space
         Vector3 neckDirection = neckBone.InverseTransformPoint(exclusiveFocused.transform.position);
@@ -173,7 +207,7 @@ public class ObjectTracker : MonoBehaviour, IObservable
         return targetRotation;
     }
     
-    private Quaternion CalculateLocalHeadLookAtTarget()
+    protected virtual Quaternion CalculateLocalHeadLookAtTarget()
     {
         Vector3 headDirection = headBone.InverseTransformPoint(exclusiveFocused.transform.position);
         float headFollowRotationAngle = Mathf.Atan2(headDirection.z, headDirection.y) * Mathf.Rad2Deg;

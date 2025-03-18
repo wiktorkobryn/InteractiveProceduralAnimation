@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2678352154146157048}
   - component: {fileID: 4844137830014336207}
   m_Layer: 0
-  m_Name: Spectator
+  m_Name: SpectatorFPS
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
