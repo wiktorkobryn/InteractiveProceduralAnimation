@@ -11,7 +11,7 @@ public class ObjectTrackerSearch : ObjectTracker
     public List<Transform> raycastPoints = new List<Transform>();
 
     [Header("State: Detected")]
-    private bool outOfBoundsReached = false;
+    protected bool outOfBoundsReached = false;
 
     public override void Activate()
     {
@@ -135,15 +135,20 @@ public class ObjectTrackerSearch : ObjectTracker
 
     protected override IEnumerator FollowTarget()
     {
-        Quaternion targetRotationNeck, targetRotationHead;
+        Quaternion targetRotationNeck = CalculateLocalNeckLookAtTarget();
+        Quaternion targetRotationHead = CalculateLocalHeadLookAtTarget();
+
         float angleNeck = 0f,
               angleHead = 0f;
 
         while (true)
         {
             outOfBoundsReached = false;
-            targetRotationNeck = CalculateLocalNeckLookAtTarget();
-            targetRotationHead = CalculateLocalHeadLookAtTarget();
+            if(FocusedObject != null)
+            {
+                targetRotationNeck = CalculateLocalNeckLookAtTarget();
+                targetRotationHead = CalculateLocalHeadLookAtTarget();
+            } 
 
             angleNeck = Transf3D.CalculateAngleSigned(targetRotationNeck, restNeckRotation, Vector3.one);
             angleHead = Transf3D.CalculateAngleSigned(targetRotationHead, restHeadRotation, Vector3.one);
@@ -173,7 +178,7 @@ public class ObjectTrackerSearch : ObjectTracker
         }
     }
 
-    protected IEnumerator CheckIfFocusedInBounds()
+    protected virtual IEnumerator CheckIfFocusedInBounds()
     {
         Ray visionRay;
         RaycastHit hit;

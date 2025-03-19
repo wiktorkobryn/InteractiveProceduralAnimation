@@ -33,8 +33,8 @@ public class ObjectTrackerFocus : ObjectTrackerSearch
 
     protected override void DebugDrawRays()
     {
-        if (State == TrackerState.Detected)
-            base.DebugDrawRays();
+        if(FocusedObject != null)
+            Debug.DrawRay(headBone.position, (FocusedObject.transform.position - headBone.position).normalized * detectionRange, Color.cyan);
     }
 
     protected override void OnTrackerStateChanged()
@@ -49,7 +49,7 @@ public class ObjectTrackerFocus : ObjectTrackerSearch
                 StartCoroutine(CheckIfFocusedInBounds());
                 break;
             case TrackerState.Lost:
-                StartCoroutine(ResetRotationsAnimation(true, TrackerState.Standby));
+                StartCoroutine(ResetRotationsAnimation(false, TrackerState.Standby));
                 StartCoroutine(IdleSearchForTarget());
                 break;
             default:
@@ -67,14 +67,33 @@ public class ObjectTrackerFocus : ObjectTrackerSearch
 
             if (FocusedObject != null)
                 break;
-            //else
-            //    Debug.Log("nothing reachable in area");
 
             // WaitForSeconds instead of WaitUntil for optimization
             yield return new WaitForSecondsRealtime(refreshSearchInterval);
         }
 
+        Debug.Log("detected: " + FocusedObject);
         State = TrackerState.Detected;
+        StateChanged = true;
+    }
+
+    protected override IEnumerator CheckIfFocusedInBounds()
+    {
+        while (true)
+        {
+            // refresh closest object
+            FocusedObject = FindClosestReachableObject();
+
+            if (FocusedObject == null)
+            {
+                Debug.Log("target lost: no reachable objects in area");
+                break;
+            }
+
+            yield return new WaitForSeconds(checkInBoundsInterval);
+        }
+
+        State = TrackerState.Lost;
         StateChanged = true;
     }
 
@@ -99,7 +118,7 @@ public class ObjectTrackerFocus : ObjectTrackerSearch
 
                 if(length < minDistance || minDistanceObj == null)
                 {
-                    visionRay = new Ray(headBoneEnd.position, obj.transform.position - headBoneEnd.position);
+                    visionRay = new Ray(headBone.position, obj.transform.position - headBone.position);
                     isHit = Physics.Raycast(visionRay, out hit, detectionRange);
 
                     if(isHit && hit.collider.gameObject == obj)
