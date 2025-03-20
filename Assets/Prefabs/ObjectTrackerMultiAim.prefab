@@ -41,10 +41,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2549056769603768048}
-  - component: {fileID: 7306171331865159104}
   - component: {fileID: 787271485778317722}
+  - component: {fileID: 7482334352350388094}
   m_Layer: 0
-  m_Name: ObjectTrackerSimple
+  m_Name: ObjectTrackerMultiAim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,38 +68,6 @@ Transform:
   - {fileID: 7899096770760587062}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7306171331865159104
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4421658687830747024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 85f8386d54b8bfc4689d3dccf94c436e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isActive: 1
-  movementInOutEasing: 0
-  detectionRange: 10
-  observers:
-  - {fileID: 6518055156138150832}
-  rootBone: {fileID: 4273156327496597726}
-  neckBone: {fileID: 3395192313757086650}
-  headBone: {fileID: 6409969538343291105}
-  headBoneEnd: {fileID: 7171473299509336288}
-  neckRotationAxis: {x: 0, y: 1, z: 0}
-  headRotationAxis: {x: 1, y: 0, z: 0}
-  neckBoneBoundMax: 120
-  headBoneBoundMax: 90
-  detectionLayerName: Detectable
-  sideSearchDuration: 5
-  exclusiveFocused: {fileID: 0}
-  refreshSearchInterval: 0.3
-  checkInBoundsInterval: 0.2
-  resetDuration: 2
-  timeToBeLost: 3
 --- !u!114 &787271485778317722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,6 +95,60 @@ MonoBehaviour:
   - {fileID: 6409969538343291105}
   - {fileID: 7171473299509336288}
   - {fileID: 6359975635440574681}
+--- !u!114 &7482334352350388094
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4421658687830747024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c430f382484144e925c097c2d33cfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Weight: 1
+  m_Data:
+    m_ConstrainedObject: {fileID: 3395192313757086650}
+    m_SourceObjects:
+      m_Length: 1
+      m_Item0:
+        transform: {fileID: 0}
+        weight: 1
+      m_Item1:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item2:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item3:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item4:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item5:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item6:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item7:
+        transform: {fileID: 0}
+        weight: 0
+    m_Offset: {x: 0, y: 0, z: 0}
+    m_MinLimit: -60
+    m_MaxLimit: 60
+    m_AimAxis: 4
+    m_UpAxis: 2
+    m_WorldUpType: 0
+    m_WorldUpObject: {fileID: 0}
+    m_WorldUpAxis: 2
+    m_MaintainOffset: 0
+    m_ConstrainedAxes:
+      x: 1
+      y: 1
+      z: 1
 --- !u!1 &5054940162956684146
 GameObject:
   m_ObjectHideFlags: 0
@@ -352,7 +374,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bc6264a6042defa4898c6ed40557510f, type: 2}
+  - {fileID: 2100000, guid: 7c0dc534451a7354980c056bd11250e1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
