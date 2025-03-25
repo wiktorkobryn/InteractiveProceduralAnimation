@@ -22,6 +22,9 @@ public class ProceduralWalker : MonoBehaviour, IObservable
     public float idleMovementAmplitude = 0.3f,
                  idleMovementFrequency = 1.5f;
 
+    public List<Transform> leftLegIKTargets, rightLegIKTargets,
+                           leftLegHomePositions, rightLegHomePositions;
+
     protected void Start()
     {
         Activate();
