@@ -218,12 +218,14 @@ public class ObjectTracker : MonoBehaviour, IObservable
 
     #endregion
 
+    #region observers
+
     public void NotifyObservers()
     {
         foreach(GameObject g in observers)
         {
             // MonoBehaviour & Unity inspector interface limitations
-            g.SendMessage("OnValueChanged", State);
+            g.SendMessage("OnValueChanged", (int)State);
         }
     }
 
@@ -236,4 +238,6 @@ public class ObjectTracker : MonoBehaviour, IObservable
     {
         observers.Remove(obj);
     }
+
+    #endregion
 }

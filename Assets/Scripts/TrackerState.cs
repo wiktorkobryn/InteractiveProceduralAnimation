@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum TrackerState
 {
-    Off,
+    Off = 0,
     Standby,
     Search,
     Detected,

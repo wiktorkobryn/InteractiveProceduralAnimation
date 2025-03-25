@@ -131,6 +131,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Quadruped
       objectReference: {fileID: 0}
+    - target: {fileID: 7225058451224398841, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: idleAnimationAxis.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225058451224398841, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: idleAnimationAxis.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225058451224398841, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: idleMovementAmplitude
+      value: 0.001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7225058451224398841, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: idleMovementFrequency
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8799593802471166313, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.042461

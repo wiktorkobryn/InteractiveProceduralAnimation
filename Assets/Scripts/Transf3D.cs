@@ -23,6 +23,20 @@ public static class Transf3D
         }
     }
 
+    public static IEnumerator IdleFloatConstant(Transform bone, Vector3 axis, float frequency, float amplitude)
+    {
+        Vector3 restPosition = bone.localPosition;
+        float moveOffset;
+
+        while(true)
+        {
+            moveOffset = Mathf.Sin(Time.time * Mathf.PI * 2 * frequency) * amplitude;
+            bone.localPosition = restPosition + axis * moveOffset;
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
     public static float CalculateAngleAbs(Quaternion currentRotation, Quaternion baseRotation, Vector3 axis)
     {
         return Quaternion.Angle(baseRotation, Quaternion.Euler(currentRotation.eulerAngles.x * axis.x,
