@@ -625,10 +625,19 @@ MonoBehaviour:
   idleAnimationAxis: {x: 0, y: 0, z: 1}
   idleMovementAmplitude: 0.0005
   idleMovementFrequency: 0.3
-  leftLegIKTargets: []
-  rightLegIKTargets: []
-  leftLegHomePositions: []
-  rightLegHomePositions: []
+  leftLegs:
+  - targetIK: {fileID: 7572554167492005732}
+    homePosition: {fileID: 1415543249062444710}
+  - targetIK: {fileID: 695531376536613030}
+    homePosition: {fileID: 8562655903158637122}
+  rightLegs:
+  - targetIK: {fileID: 9177316955459221646}
+    homePosition: {fileID: 3766965706762762658}
+  - targetIK: {fileID: 208322140051315697}
+    homePosition: {fileID: 3624803925564866278}
+  maxLegHomeDistance: 1
+  stepDuration: 0.1
+  startMovingDelay: 0.1
 --- !u!95 &3880958896239742108
 Animator:
   serializedVersion: 7
@@ -1200,8 +1209,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6840149661450701912}
   - {fileID: 1118136086873772695}
+  - {fileID: 6840149661450701912}
   - {fileID: 8702740102416329306}
   - {fileID: 992619048544334059}
   m_Father: {fileID: 7995097610416119284}

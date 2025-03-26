@@ -1,11 +1,19 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public enum WalkerState
 {
     Off = 0,
-    Idle
+    Idle,
+    Move
+}
+
+[Serializable]
+public class MovableIKBone
+{
+    public Transform targetIK, homePosition;
 }
 
 public class ProceduralWalker : MonoBehaviour, IObservable
@@ -22,14 +30,17 @@ public class ProceduralWalker : MonoBehaviour, IObservable
     public float idleMovementAmplitude = 0.3f,
                  idleMovementFrequency = 1.5f;
 
-    public List<Transform> leftLegIKTargets, rightLegIKTargets,
-                           leftLegHomePositions, rightLegHomePositions;
+    public List<MovableIKBone> leftLegs, rightLegs;
+
+    public float maxLegHomeDistance = 0.5f, stepDuration = 0.5f;
+    public float startMovingDelay = 0.1f;
 
     protected void Start()
     {
         Activate();
         if (isActive)
-            State = WalkerState.Idle;
+            State = WalkerState.Move;
+            //State = WalkerState.Idle;
         else
             State = WalkerState.Off;
 
@@ -65,6 +76,10 @@ public class ProceduralWalker : MonoBehaviour, IObservable
             case WalkerState.Idle:
                 StartCoroutine(Transf3D.IdleFloatConstant(bodyBone, idleAnimationAxis, idleMovementFrequency, idleMovementAmplitude));
                 break;
+            case WalkerState.Move:
+                // delay for home positions to settle on the ground
+                StartCoroutine(StartWalkingAfterDelay());
+                break;
         }
     }
 
@@ -79,6 +94,40 @@ public class ProceduralWalker : MonoBehaviour, IObservable
             StateChanged = false;
         }
     }
+
+    #region animations
+
+    protected IEnumerator StartWalkingAfterDelay()
+    {
+        yield return new WaitForSecondsRealtime(startMovingDelay);
+
+        foreach(MovableIKBone bone in leftLegs)
+            StartCoroutine(MoveLeg(bone));
+
+        foreach (MovableIKBone bone in rightLegs)
+            StartCoroutine(MoveLeg(bone));
+    }
+
+    protected IEnumerator MoveLeg(MovableIKBone bone)
+    {
+        float distance;
+        Coroutine movement = null;
+
+        while(true)
+        {
+            movement = null;
+
+            distance = Transf3D.GlobalDistance(bone.homePosition, bone.targetIK);
+
+            if (distance > maxLegHomeDistance)
+                movement = StartCoroutine(Transf3D.MoveOverTimeLinear(bone.targetIK, stepDuration, bone.targetIK.position, bone.homePosition.position));
+
+            // works like return new WaitForEndOfFrame() when Coroutine is null
+            yield return movement;
+        }
+    }
+
+    #endregion
 
     #region observers
 

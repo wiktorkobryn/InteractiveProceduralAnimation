@@ -4,16 +4,19 @@ using UnityEngine;
 
 public static class Transf3D
 {
-    public static IEnumerator RotateOverTime(Transform bone, float durarion, Quaternion startRotation, Quaternion endRotation, bool easingInOut = false)
+    #region cotoutines
+
+    /// <summary> local rotation </summary>
+    public static IEnumerator RotateOverTime(Transform bone, float duration, Quaternion startRotation, Quaternion endRotation, bool easingInOut = false)
     {
         float elapsedTime = 0.0f;
         float t = 0.0f;
 
-        while (elapsedTime < durarion)
+        while (elapsedTime < duration)
         {
-            t = elapsedTime / durarion;
+            t = elapsedTime / duration;
 
-            if(easingInOut)
+            if (easingInOut)
                 t = Mathf.SmoothStep(0.0f, 1.0f, t);
 
             bone.transform.localRotation = Quaternion.Slerp(startRotation, endRotation, t);
@@ -28,7 +31,7 @@ public static class Transf3D
         Vector3 restPosition = bone.localPosition;
         float moveOffset;
 
-        while(true)
+        while (true)
         {
             moveOffset = Mathf.Sin(Time.time * Mathf.PI * 2 * frequency) * amplitude;
             bone.localPosition = restPosition + axis * moveOffset;
@@ -36,6 +39,30 @@ public static class Transf3D
             yield return new WaitForEndOfFrame();
         }
     }
+
+    /// <summary> global position </summary>
+    public static IEnumerator MoveOverTimeLinear(Transform bone, float duration, Vector3 startPosition, Vector3 endPosition, bool easingInOut = false)
+    {
+        float elapsedTime = 0.0f;
+        float t = 0.0f;
+
+        while (elapsedTime < duration)
+        {
+            t = elapsedTime / duration;
+
+            if (easingInOut)
+                t = Mathf.SmoothStep(0.0f, 1.0f, t);
+
+            bone.transform.position = Vector3.Lerp(startPosition, endPosition, t);
+            elapsedTime += Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    #endregion
+
+    #region methods
 
     public static float CalculateAngleAbs(Quaternion currentRotation, Quaternion baseRotation, Vector3 axis)
     {
@@ -56,4 +83,11 @@ public static class Transf3D
 
         return angle;
     }
+
+    public static float GlobalDistance(Transform end, Transform start)
+    {
+        return (end.position - start.position).magnitude;
+    }
+
+    #endregion
 }

@@ -121,7 +121,7 @@ public class ObjectTracker : MonoBehaviour, IObservable
         }
     }
 
-    #region animation_states
+    #region animation
 
     protected virtual IEnumerator ResetRotationsAnimation(bool waitForLost = true, TrackerState stateToChange = TrackerState.Off)
     {
