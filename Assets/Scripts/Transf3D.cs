@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
+using System.Net;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Splines;
 
 public static class Transf3D
 {
@@ -26,6 +29,7 @@ public static class Transf3D
         }
     }
 
+    /// <summary> local position </summary>
     public static IEnumerator IdleFloatConstant(Transform bone, Vector3 axis, float frequency, float amplitude)
     {
         Vector3 restPosition = bone.localPosition;
@@ -60,6 +64,61 @@ public static class Transf3D
         }
     }
 
+    /// <summary> global position </summary>
+    public static IEnumerator MoveOverTimeQuadratic(Transform bone, float duration, Vector3 startPosition, Vector3 endPosition, bool easingInOut = false)
+    {
+        Vector3 centerPosition = (endPosition + startPosition) * 0.5f;
+        centerPosition += (Vector3.up * Vector3.Distance(startPosition, endPosition));
+
+        float elapsedTime = 0.0f;
+        float t = 0.0f;
+
+        while (elapsedTime < duration)
+        {
+            t = elapsedTime / duration;
+
+            if (easingInOut)
+                t = Mathf.SmoothStep(0.0f, 1.0f, t);
+            
+            // quadratic bezier curve
+            bone.position = Vector3.Lerp(
+                                    Vector3.Lerp(startPosition, centerPosition, t),
+                                    Vector3.Lerp(centerPosition, endPosition, t), t);
+
+            elapsedTime += Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    /// <summary> global position </summary>
+    public static IEnumerator MoveOverTimeSpherical(Transform bone, float duration, Vector3 startPosition, Vector3 endPosition, bool easingInOut = false)
+    {
+        Vector3 center = (endPosition + startPosition) * 0.5f;
+        center -= new Vector3(0, Vector3.Distance(startPosition, endPosition) * 0.5f, 0);
+
+        Vector3 startDirection = startPosition - center;
+        Vector3 endDirection = endPosition - center;
+
+        float elapsedTime = 0.0f;
+        float t = 0.0f;
+
+        while (elapsedTime < duration)
+        {
+            t = elapsedTime / duration;
+
+            if (easingInOut)
+                t = Mathf.SmoothStep(1.0f, 1.0f, t);
+
+            bone.position = Vector3.Slerp(startDirection, endDirection, t);
+            bone.position += center;
+
+            elapsedTime += Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
     #endregion
 
     #region methods
@@ -87,6 +146,20 @@ public static class Transf3D
     public static float GlobalDistance(Transform end, Transform start)
     {
         return (end.position - start.position).magnitude;
+    }
+
+    public static bool PositionOnTheGround(ref Vector3 globalPoint, float projectionHeight)
+    {
+        Vector3 raycastStart = globalPoint + (Vector3.up * projectionHeight);
+        RaycastHit hit;
+
+        if (Physics.Raycast(raycastStart, Vector3.down, out hit, Mathf.Infinity))
+        {
+            globalPoint.y = hit.point.y;
+            return true;
+        }
+
+        return false;
     }
 
     #endregion

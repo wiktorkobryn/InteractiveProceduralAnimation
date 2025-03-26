@@ -13,7 +13,7 @@ public enum WalkerState
 [Serializable]
 public class MovableIKBone
 {
-    public Transform targetIK, homePosition;
+    public Transform targetIK, homeMarker;
 }
 
 public class ProceduralWalker : MonoBehaviour, IObservable
@@ -32,7 +32,7 @@ public class ProceduralWalker : MonoBehaviour, IObservable
 
     public List<MovableIKBone> leftLegs, rightLegs;
 
-    public float maxLegHomeDistance = 0.5f, stepDuration = 0.5f;
+    public float maxLegHomeDistance = 0.6f, stepDuration = 0.5f, legOvershootPercent = 0.3f;
     public float startMovingDelay = 0.1f;
 
     protected void Start()
@@ -112,15 +112,24 @@ public class ProceduralWalker : MonoBehaviour, IObservable
     {
         float distance;
         Coroutine movement = null;
+        Vector3 endPosition, endDirection;
 
         while(true)
         {
             movement = null;
 
-            distance = Transf3D.GlobalDistance(bone.homePosition, bone.targetIK);
+            distance = Transf3D.GlobalDistance(bone.homeMarker, bone.targetIK);
 
             if (distance > maxLegHomeDistance)
-                movement = StartCoroutine(Transf3D.MoveOverTimeLinear(bone.targetIK, stepDuration, bone.targetIK.position, bone.homePosition.position));
+            {
+                endDirection = (bone.homeMarker.position - bone.targetIK.position).normalized;
+                endPosition = bone.homeMarker.position + endDirection * (distance * legOvershootPercent);
+                Transf3D.PositionOnTheGround(ref endPosition, 1.5f);
+
+                //movement = StartCoroutine(Transf3D.MoveOverTimeLinear(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
+                //movement = StartCoroutine(Transf3D.MoveOverTimeSpherical(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
+                movement = StartCoroutine(Transf3D.MoveOverTimeQuadratic(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
+            }
 
             // works like return new WaitForEndOfFrame() when Coroutine is null
             yield return movement;
