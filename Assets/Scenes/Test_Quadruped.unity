@@ -159,13 +159,13 @@ PrefabInstance:
       propertyPath: m_TranslationOffsets.Array.data[0].y
       value: -0.21800041
       objectReference: {fileID: 0}
-    - target: {fileID: 6840149661450701912, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.0079
+    - target: {fileID: 7225058451224398841, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: legOvershootFactor
+      value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 6840149661450701912, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.00834
+    - target: {fileID: 7225058451224398841, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: maxLegHomeDistance
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 8739831543923141679, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].x
