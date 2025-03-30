@@ -28,7 +28,9 @@ public class ProceduralWalker : MonoBehaviour, IObservable
     protected bool isActiveBeforeChange = true;
     public List<GameObject> observers = new List<GameObject>();
 
-    public Transform bodyBone;
+    public Transform bodyBone, bodyBoneRest;
+    public float maxBodyMoveDistance = 0.2f;
+
     public Vector3 idleAnimationAxis = new Vector3(0, 0, 1);
     public float idleMovementAmplitude = 0.3f,
                  idleMovementFrequency = 1.5f;
@@ -44,6 +46,8 @@ public class ProceduralWalker : MonoBehaviour, IObservable
     public float legOvershootFactor = 0.5f;
     public float startMovingDelay = 0.1f;
 
+    public float updateBodyInterval = 0.3f;
+    public Vector3 bodyOffset = Vector3.zero;
     
 
     protected void Start()
@@ -91,7 +95,6 @@ public class ProceduralWalker : MonoBehaviour, IObservable
                 StartCoroutine(Transf3D.IdleFloatConstant(bodyBone, idleAnimationAxis, idleMovementFrequency, idleMovementAmplitude));
                 break;
             case WalkerState.Move:
-                // delay for home positions to settle on the ground
                 StartCoroutine(StartWalkingAfterDelay());
                 break;
         }
@@ -130,12 +133,15 @@ public class ProceduralWalker : MonoBehaviour, IObservable
             NotifyObservers();
             StateChanged = false;
         }
+
+        PositionBody();
     }
 
     #region animations
 
     protected IEnumerator StartWalkingAfterDelay()
     {
+        // delay for home positions to settle on the ground
         yield return new WaitForSecondsRealtime(startMovingDelay);
 
         firstPlacedCount = 0;
@@ -167,11 +173,14 @@ public class ProceduralWalker : MonoBehaviour, IObservable
         Coroutine movement;
         Vector3 endPosition, endDirection;
 
-        while(true)
+        PositionAnchor posLock = bone.targetIK.GetComponent<PositionAnchor>();
+        posLock.Anchor = true;
+
+        while (true)
         {
             yield return new WaitUntil(() => bone.CanMove);
 
-            distance = Transf3D.GlobalDistance(bone.homeMarker, bone.targetIK);
+            distance = Vector3.Distance(bone.homeMarker.position, bone.targetIK.position);
 
             if (distance > maxLegHomeDistance)
             {
@@ -181,9 +190,12 @@ public class ProceduralWalker : MonoBehaviour, IObservable
 
                 //movement = StartCoroutine(Transf3D.MoveOverTimeLinear(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
                 //movement = StartCoroutine(Transf3D.MoveOverTimeSpherical(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
+
+                posLock.Anchor = false;
                 movement = StartCoroutine(Transf3D.MoveOverTimeQuadratic(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
 
                 yield return movement;
+                posLock.Anchor = true;
                 bone.CanMove = false;
 
                 if (legsMovingFirst.Contains(bone))
@@ -191,7 +203,25 @@ public class ProceduralWalker : MonoBehaviour, IObservable
                 else
                     secondPlacedCount++;
             }
+
+            // distance can be checked once per frame at most
+            yield return new WaitForEndOfFrame();
         }
+    }
+
+    protected void PositionBody()
+    {
+        Vector3 targetPos = Transf3D.AveragePosition(leftLegs.Concat(rightLegs)) + bodyOffset;
+        targetPos = Transf3D.AveragePosition(targetPos, bodyBoneRest.position);
+        bodyBone.position = targetPos;
+
+        /*float distance = Vector3.Distance(bodyBoneRest.position, bodyBone.position);
+
+        if (distance > maxBodyMoveDistance)
+        {
+            Vector3 direction = (bodyBoneRest.position - bodyBone.position).normalized;
+            bodyBone.position = Vector3.MoveTowards(bodyBone.position, bodyBoneRest.position, maxBodyMoveDistance);
+        }*/
     }
 
     #endregion

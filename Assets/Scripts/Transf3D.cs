@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using TMPro;
 using UnityEngine;
@@ -143,11 +145,6 @@ public static class Transf3D
         return angle;
     }
 
-    public static float GlobalDistance(Transform end, Transform start)
-    {
-        return (end.position - start.position).magnitude;
-    }
-
     public static bool PositionOnTheGround(ref Vector3 globalPoint, float projectionHeight)
     {
         Vector3 raycastStart = globalPoint + (Vector3.up * projectionHeight);
@@ -160,6 +157,56 @@ public static class Transf3D
         }
 
         return false;
+    }
+
+    public static Vector3 AveragePosition(params Vector3[] points)
+    {
+        try
+        {
+            if (points == null)
+                throw new NullReferenceException();
+            else if (points.Length < 1)
+                throw new ArgumentException("points.Length < 1");
+
+            Vector3 sum = Vector3.zero;
+
+            foreach (Vector3 p in points)
+            {
+                sum += p;
+            }
+
+            return sum / points.Length;
+        }
+        catch(Exception ex)
+        {
+            Debug.LogError(ex.Message);
+            return Vector3.zero;
+        }
+    }
+
+    public static Vector3 AveragePosition(IEnumerable<MovableIKBone> bones)
+    {
+        try
+        {
+            if (bones == null)
+                throw new NullReferenceException();
+            else if (bones.Count() < 1)
+                throw new ArgumentException("points.Length < 1");
+
+            Vector3 sum = Vector3.zero;
+
+            foreach (MovableIKBone b in bones)
+            {
+                sum += b.targetIK.position;
+            }
+
+            return sum / bones.Count();
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError(ex.Message);
+            return Vector3.zero;
+        }
     }
 
     #endregion

@@ -6,19 +6,25 @@ public class SurfaceSticker : MonoBehaviour
     private RaycastHit hit;
     private Vector3 targetPosition;
 
+    public float deadZoneDistance = 0.01f;
+
     private void Start()
     {
         restPosition = transform.parent;
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
-        if(Physics.Raycast(restPosition.position, Vector3.down, out hit, Mathf.Infinity))
+        if (Physics.Raycast(restPosition.position, Vector3.down, out hit, Mathf.Infinity))
         {
-            targetPosition = transform.position;
-            targetPosition.y = hit.point.y;
+            float newY = hit.point.y;
 
-            transform.position = targetPosition;
+            if (Mathf.Abs(transform.position.y - newY) > deadZoneDistance)
+            {
+                targetPosition = transform.position;
+                targetPosition.y = newY;
+                transform.position = targetPosition;
+            }
         }
     }
 }

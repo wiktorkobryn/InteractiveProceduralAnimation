@@ -127,57 +127,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 793461468052560707, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].x
-      value: 0.9343622
-      objectReference: {fileID: 0}
-    - target: {fileID: 793461468052560707, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.22199965
-      objectReference: {fileID: 0}
-    - target: {fileID: 793461468052560707, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: 1.293504
-      objectReference: {fileID: 0}
-    - target: {fileID: 3136712073290323293, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].x
-      value: 0.9360001
-      objectReference: {fileID: 0}
-    - target: {fileID: 3136712073290323293, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: -0.2261281
-      objectReference: {fileID: 0}
     - target: {fileID: 3407243340499206497, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_Name
       value: Quadruped
-      objectReference: {fileID: 0}
-    - target: {fileID: 3743341396219719845, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].x
-      value: -0.94838023
-      objectReference: {fileID: 0}
-    - target: {fileID: 3743341396219719845, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: -0.21800041
-      objectReference: {fileID: 0}
-    - target: {fileID: 7225058451224398841, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: legOvershootFactor
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7225058451224398841, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: maxLegHomeDistance
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8739831543923141679, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].x
-      value: -0.9483807
-      objectReference: {fileID: 0}
-    - target: {fileID: 8739831543923141679, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.22200012
-      objectReference: {fileID: 0}
-    - target: {fileID: 8739831543923141679, guid: 10e210d553521214189584f14271a53f, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: 1.293504
       objectReference: {fileID: 0}
     - target: {fileID: 8799593802471166313, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_LocalPosition.x

@@ -7,7 +7,7 @@ public class SphereDebug : MonoBehaviour
 
     private void OnValidate()
     {
-        OnDrawGizmos();
+        //
     }
 
     private void OnDrawGizmos()
