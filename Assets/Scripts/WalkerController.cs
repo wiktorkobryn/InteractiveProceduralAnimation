@@ -20,7 +20,8 @@ public class WalkerController : MonoBehaviour, IObservable
 
     [Header("Movement")]
     public float movementSpeed = 20.0f;
-    public float rotationSpeed = 20.0f;
+    public float rotationSpeed = 20.0f, speedMultiplier = 2.0f;
+    private float currentMovSpeed = 20.0f;
     private float movementVerical, movementHorizontal;
 
     public List<GameObject> observers = new List<GameObject>();
@@ -93,8 +94,8 @@ public class WalkerController : MonoBehaviour, IObservable
 
     private void ApplyPosition()
     {
-        movementVerical = Input.GetAxis("Vertical") * Time.deltaTime * movementSpeed;
-        movementHorizontal = Input.GetAxis("Horizontal") * Time.deltaTime * movementSpeed;
+        movementVerical = Input.GetAxis("Vertical") * Time.deltaTime * currentMovSpeed;
+        movementHorizontal = Input.GetAxis("Horizontal") * Time.deltaTime * currentMovSpeed;
 
         transform.Translate(new Vector3(movementHorizontal, 0, movementVerical));
     }
@@ -102,6 +103,11 @@ public class WalkerController : MonoBehaviour, IObservable
     public bool IsMoving()
     {
         return State == WalkerState.Move || State == WalkerState.MoveFast;
+    }
+
+    public bool IsNotRotating()
+    {
+        return Input.GetKey(KeyCode.Q) == false && Input.GetKey(KeyCode.E) == false;
     }
 
     public bool IsAnyInput()
@@ -116,13 +122,20 @@ public class WalkerController : MonoBehaviour, IObservable
             ApplyRotation();
             ApplyPosition();
 
-            if (IsAnyInput() == false && IsMoving())
+            if (IsAnyInput() == false && IsMoving())        // stop moving
             {
                 State = WalkerState.Idle;
                 NotifyObservers();
             }
-            else if (IsAnyInput() && IsMoving() == false)
+            else if (State == WalkerState.Move && IsAnyInput() && IsNotRotating() && Input.GetKey(KeyCode.LeftShift))  // start sprinting
             {
+                currentMovSpeed = movementSpeed * speedMultiplier;
+                State = WalkerState.MoveFast;
+                NotifyObservers();
+            }
+            else if (IsAnyInput() && State != WalkerState.Move)   // start moving
+            {
+                currentMovSpeed = movementSpeed;
                 State = WalkerState.Move;
                 NotifyObservers();
             }

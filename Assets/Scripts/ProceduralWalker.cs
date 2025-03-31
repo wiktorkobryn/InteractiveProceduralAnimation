@@ -37,6 +37,7 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
     private int firstPlacedCount = 0, secondPlacedCount = 0;
 
     public float maxLegHomeDistance = 0.6f, stepDuration = 0.5f, runStepMultiplier = 3.0f;
+    private float currentMaxLegDistance = 1.0f;
 
     [Range(0.0f, 0.99f)]
     public float legOvershootFactor = 0.5f;
@@ -59,23 +60,37 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
 
     protected void OnStateChanged()
     {
-        switch(State)
+        if (State == WalkerState.MoveFast)
         {
-            default:
-            case WalkerState.Off:
-                break;
-            case WalkerState.Idle:
-                if(bodyMovement != null)
-                    StopCoroutine(bodyMovement);
-                idleAnimation = StartCoroutine(Transf3D.IdleFloatConstant(bodyBone, idleAnimationAxis, idleMovementFrequency, idleMovementAmplitude));
-                break;
-            case WalkerState.Move:
-                if(idleAnimation != null)
-                    StopCoroutine(idleAnimation);
-                bodyMovement = StartCoroutine(PositionBody());
-                //StartCoroutine(RotateBodyToPlane());
-                break;
+            currentMaxLegDistance = maxLegHomeDistance * runStepMultiplier;
         }
+        else
+        {
+            StopBodyCoroutines();
+            currentMaxLegDistance = maxLegHomeDistance;
+
+            switch (State)
+            {
+                default:
+                case WalkerState.Off:
+                    break;
+                case WalkerState.Idle:
+                    idleAnimation = StartCoroutine(Transf3D.IdleFloatConstant(bodyBone, idleAnimationAxis, idleMovementFrequency, idleMovementAmplitude));
+                    break;
+                case WalkerState.Move:
+                    bodyMovement = StartCoroutine(PositionBody());
+                    //StartCoroutine(RotateBodyToPlane());
+                    break;
+            }
+        }
+    }
+
+    private void StopBodyCoroutines()
+    {
+        if (bodyMovement != null)
+            StopCoroutine(bodyMovement);
+        if (idleAnimation != null)
+            StopCoroutine(idleAnimation);
     }
 
     private void SetLegGroups()
@@ -146,7 +161,7 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
 
             distance = Vector3.Distance(bone.homeMarker.position, bone.targetIK.position);
 
-            if (distance > maxLegHomeDistance)
+            if (distance > currentMaxLegDistance)
             {
                 endDirection = (bone.homeMarker.position - bone.targetIK.position).normalized;
                 endPosition = bone.homeMarker.position + endDirection * (distance * legOvershootFactor);

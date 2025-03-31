@@ -12,7 +12,7 @@ public class StateIndicator : MonoBehaviour
 
     public void ChangeSprite(int index)
     {
-        if (index < indicators.Count())
+        if (index < indicators.Count() && index >= 0)
         {
             spriteRenderer.sprite = indicators[index];
             Current = index;

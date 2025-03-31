@@ -6,6 +6,7 @@ public class ObjectStateIndicator : StateIndicator, IObserver<int>
 {
     public void OnValueChanged(int stateValue)
     {
-        ChangeSprite(stateValue);
+        if(Current != stateValue)
+            ChangeSprite(stateValue);
     }
 }
