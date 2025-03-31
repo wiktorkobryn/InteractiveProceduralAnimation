@@ -5,6 +5,7 @@ public class SurfaceSticker : MonoBehaviour
     private Transform restPosition;
     private RaycastHit hit;
     private Vector3 targetPosition;
+    public LayerMask layerToIgnore;
 
     private void Start()
     {
@@ -13,7 +14,7 @@ public class SurfaceSticker : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (Physics.Raycast(restPosition.position, Vector3.down, out hit, Mathf.Infinity))
+        if (Physics.Raycast(restPosition.position, Vector3.down, out hit, Mathf.Infinity, ~layerToIgnore))
         {
             targetPosition = transform.position;
             targetPosition.y = hit.point.y;

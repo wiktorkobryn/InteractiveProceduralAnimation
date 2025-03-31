@@ -12,7 +12,7 @@ public static class Transf3D
     #region cotoutines
 
     /// <summary> local rotation </summary>
-    public static IEnumerator RotateOverTime(Transform bone, float duration, Quaternion startRotation, Quaternion endRotation, bool easingInOut = false)
+    public static IEnumerator RotateOverTime(Transform bone, float duration, Quaternion startRotation, Quaternion endRotation, bool easingInOut = false, bool localSpace = true)
     {
         float elapsedTime = 0.0f;
         float t = 0.0f;
@@ -24,12 +24,17 @@ public static class Transf3D
             if (easingInOut)
                 t = Mathf.SmoothStep(0.0f, 1.0f, t);
 
-            bone.transform.localRotation = Quaternion.Slerp(startRotation, endRotation, t);
+            if(localSpace)
+                bone.transform.localRotation = Quaternion.Slerp(startRotation, endRotation, t);
+            else
+                bone.transform.rotation = Quaternion.Slerp(startRotation, endRotation, t);
+
             elapsedTime += Time.deltaTime;
 
             yield return new WaitForEndOfFrame();
         }
     }
+
 
     /// <summary> local position </summary>
     public static IEnumerator IdleFloatConstant(Transform bone, Vector3 axis, float frequency, float amplitude)

@@ -9,7 +9,8 @@ public enum WalkerState
 {
     Off = 0,
     Idle,
-    Move
+    Move,
+    MoveFast
 }
 
 [Serializable]
@@ -19,14 +20,9 @@ public class MovableIKBone
     public bool CanMove { get; set; } = false;
 }
 
-public class ProceduralWalker : MonoBehaviour, IObservable
+public class ProceduralWalker : MonoBehaviour, IObserver<int>
 {
-    public WalkerState State { get; private set; }
-    public bool StateChanged { get; protected set; } = false;
-
-    public bool isActive = true;
-    protected bool isActiveBeforeChange = true;
-    public List<GameObject> observers = new List<GameObject>();
+    public WalkerState State { get; private set; } = WalkerState.Off;
 
     public Transform bodyBone, bodyBoneRest;
     public float maxBodyMoveDistance = 0.2f;
@@ -40,48 +36,25 @@ public class ProceduralWalker : MonoBehaviour, IObservable
     private List<MovableIKBone> legsMovingFirst, legsMovingSecond;
     private int firstPlacedCount = 0, secondPlacedCount = 0;
 
-    public float maxLegHomeDistance = 0.6f, stepDuration = 0.5f;
+    public float maxLegHomeDistance = 0.6f, stepDuration = 0.5f, runStepMultiplier = 3.0f;
 
     [Range(0.0f, 0.99f)]
     public float legOvershootFactor = 0.5f;
     public float startMovingDelay = 0.1f;
 
-    public float updateBodyInterval = 0.3f;
-    public Vector3 bodyOffset = Vector3.zero;
-    
+    public float updateBodyInterval = 0.2f;
+    public float bodyOffsetY = 0.0f;
+    public LayerMask layerToIgnore;
+
+    private Coroutine idleAnimation = null, bodyMovement = null;
+
 
     protected void Start()
     {
-        Activate();
-        if (isActive)
-            State = WalkerState.Move;
-            //State = WalkerState.Idle;
-        else
-            State = WalkerState.Off;
-
-        StateChanged = true;
-
         legsMovingFirst = new List<MovableIKBone>();
         legsMovingSecond = new List<MovableIKBone>();
-    }
 
-    protected void OnValidate()
-    {
-        Activate();
-    }
-
-    public virtual void Activate()
-    {
-        if (isActive != isActiveBeforeChange)
-        {
-            if (isActive)
-                State = WalkerState.Idle;
-            else
-                State = WalkerState.Off;
-
-            isActiveBeforeChange = isActive;
-            StateChanged = true;
-        }
+        StartCoroutine(StartWalkingAfterDelay());
     }
 
     protected void OnStateChanged()
@@ -92,10 +65,15 @@ public class ProceduralWalker : MonoBehaviour, IObservable
             case WalkerState.Off:
                 break;
             case WalkerState.Idle:
-                StartCoroutine(Transf3D.IdleFloatConstant(bodyBone, idleAnimationAxis, idleMovementFrequency, idleMovementAmplitude));
+                if(bodyMovement != null)
+                    StopCoroutine(bodyMovement);
+                idleAnimation = StartCoroutine(Transf3D.IdleFloatConstant(bodyBone, idleAnimationAxis, idleMovementFrequency, idleMovementAmplitude));
                 break;
             case WalkerState.Move:
-                StartCoroutine(StartWalkingAfterDelay());
+                if(idleAnimation != null)
+                    StopCoroutine(idleAnimation);
+                bodyMovement = StartCoroutine(PositionBody());
+                //StartCoroutine(RotateBodyToPlane());
                 break;
         }
     }
@@ -121,20 +99,6 @@ public class ProceduralWalker : MonoBehaviour, IObservable
 
         foreach (MovableIKBone bone in legsMovingFirst)
             bone.CanMove = true;
-    }
-
-    private void FixedUpdate()
-    {
-        if(StateChanged)
-        {
-            StopAllCoroutines();
-            OnStateChanged();
-
-            NotifyObservers();
-            StateChanged = false;
-        }
-
-        PositionBody();
     }
 
     #region animations
@@ -209,42 +173,48 @@ public class ProceduralWalker : MonoBehaviour, IObservable
         }
     }
 
-    protected void PositionBody()
+    protected IEnumerator PositionBody()
     {
-        Vector3 targetPos = Transf3D.AveragePosition(leftLegs.Concat(rightLegs)) + bodyOffset;
-        targetPos = Transf3D.AveragePosition(targetPos, bodyBoneRest.position);
-        bodyBone.position = targetPos;
-
-        /*float distance = Vector3.Distance(bodyBoneRest.position, bodyBone.position);
-
-        if (distance > maxBodyMoveDistance)
+        while(true)
         {
-            Vector3 direction = (bodyBoneRest.position - bodyBone.position).normalized;
-            bodyBone.position = Vector3.MoveTowards(bodyBone.position, bodyBoneRest.position, maxBodyMoveDistance);
-        }*/
+            yield return new WaitForFixedUpdate();
+
+            Vector3 targetPos = Transf3D.AveragePosition(leftLegs.Concat(rightLegs)) + new Vector3(0, bodyOffsetY, 0);
+            targetPos = Transf3D.AveragePosition(targetPos, bodyBoneRest.position);
+            bodyBone.position = targetPos;
+        }
+    }
+
+    protected IEnumerator RotateBodyToPlane()
+    {
+        RaycastHit hit;
+        Quaternion targetRotation;
+
+        while(true)
+        {
+            if (Physics.Raycast(bodyBoneRest.position, Vector3.down, out hit, Mathf.Infinity, ~layerToIgnore))
+            {
+                targetRotation = Quaternion.FromToRotation(-(bodyBone.localRotation * Vector3.down), hit.normal) * bodyBone.localRotation;
+                //yield return StartCoroutine(Transf3D.RotateOverTime(bodyBone, updateBodyInterval, bodyBone.localRotation, targetRotation, false, true));
+
+                //
+                bodyBone.localRotation = targetRotation;
+                yield return new WaitForSecondsRealtime(updateBodyInterval);
+
+            }
+            else
+                yield return new WaitForSecondsRealtime(updateBodyInterval);
+        }
     }
 
     #endregion
 
-    #region observers
+    #region observer
 
-    public void NotifyObservers()
+    public void OnValueChanged(int value)
     {
-        foreach (GameObject g in observers)
-        {
-            // MonoBehaviour & Unity inspector interface limitations
-            g.SendMessage("OnValueChanged", (int)State);
-        }
-    }
-
-    public void AddObserver(GameObject obj)
-    {
-        observers.Add(obj);
-    }
-
-    public void DeleteObserver(GameObject obj)
-    {
-        observers.Remove(obj);
+        State = (WalkerState)value;
+        OnStateChanged();
     }
 
     #endregion
