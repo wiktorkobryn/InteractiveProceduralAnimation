@@ -103,6 +103,7 @@ MonoBehaviour:
   rotateToPlaneNormal: 0
   movementSpeed: 1
   rotationSpeed: 80
+  speedMultiplier: 2
   observers:
   - {fileID: 8260407850623988221}
   - {fileID: 2533140395680311513}

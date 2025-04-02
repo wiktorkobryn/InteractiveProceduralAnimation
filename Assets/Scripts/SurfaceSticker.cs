@@ -6,6 +6,7 @@ public class SurfaceSticker : MonoBehaviour
     private RaycastHit hit;
     private Vector3 targetPosition;
     public LayerMask layerToIgnore;
+    public float bodyOffsetY;
 
     private void Start()
     {
@@ -17,7 +18,7 @@ public class SurfaceSticker : MonoBehaviour
         if (Physics.Raycast(restPosition.position, Vector3.down, out hit, Mathf.Infinity, ~layerToIgnore))
         {
             targetPosition = transform.position;
-            targetPosition.y = hit.point.y;
+            targetPosition.y = hit.point.y + bodyOffsetY;
             transform.position = targetPosition;
         }
     }

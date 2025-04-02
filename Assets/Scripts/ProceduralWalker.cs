@@ -56,6 +56,7 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
         legsMovingSecond = new List<MovableIKBone>();
 
         StartCoroutine(StartWalkingAfterDelay());
+        StartCoroutine(RotateBodyToPlane());
     }
 
     protected void OnStateChanged()
@@ -79,7 +80,6 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
                     break;
                 case WalkerState.Move:
                     bodyMovement = StartCoroutine(PositionBody());
-                    //StartCoroutine(RotateBodyToPlane());
                     break;
             }
         }
@@ -167,9 +167,6 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
                 endPosition = bone.homeMarker.position + endDirection * (distance * legOvershootFactor);
                 Transf3D.PositionOnTheGround(ref endPosition, 1.5f);
 
-                //movement = StartCoroutine(Transf3D.MoveOverTimeLinear(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
-                //movement = StartCoroutine(Transf3D.MoveOverTimeSpherical(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
-
                 posLock.Anchor = false;
                 movement = StartCoroutine(Transf3D.MoveOverTimeQuadratic(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
 
@@ -200,25 +197,19 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
         }
     }
 
+    public Transform bodyTarget;
     protected IEnumerator RotateBodyToPlane()
     {
-        RaycastHit hit;
-        Quaternion targetRotation;
+        Quaternion startRotation;
 
-        while(true)
+        while (true)
         {
-            if (Physics.Raycast(bodyBoneRest.position, Vector3.down, out hit, Mathf.Infinity, ~layerToIgnore))
-            {
-                targetRotation = Quaternion.FromToRotation(-(bodyBone.localRotation * Vector3.down), hit.normal) * bodyBone.localRotation;
-                //yield return StartCoroutine(Transf3D.RotateOverTime(bodyBone, updateBodyInterval, bodyBone.localRotation, targetRotation, false, true));
+            startRotation = bodyBone.rotation;
 
-                //
-                bodyBone.localRotation = targetRotation;
-                yield return new WaitForSecondsRealtime(updateBodyInterval);
+            bodyBone.LookAt(bodyTarget);
+            bodyBone.Rotate(90, 0, 0);
 
-            }
-            else
-                yield return new WaitForSecondsRealtime(updateBodyInterval);
+            yield return StartCoroutine(Transf3D.RotateOverTime(bodyBone, updateBodyInterval, startRotation, bodyBone.rotation, false, true));
         }
     }
 

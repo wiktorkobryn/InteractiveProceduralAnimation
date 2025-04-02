@@ -136,6 +136,69 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   anchor: 0
+--- !u!1 &1196733966337374541
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7199308766874411282}
+  - component: {fileID: 4650034381752193135}
+  - component: {fileID: 3952601992509369962}
+  m_Layer: 0
+  m_Name: FocusRotationPointEnd
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7199308766874411282
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196733966337374541}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0.453}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5399956490165686425}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4650034381752193135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196733966337374541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3fc2247f787d7246a0d87463aac1e4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layerToIgnore:
+    serializedVersion: 2
+    m_Bits: 4
+  bodyOffsetY: 0.45
+--- !u!114 &3952601992509369962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196733966337374541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bb380406aacc234194faa41c1ada94d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 0.04
+  color: {r: 1, g: 0.73340195, b: 0.015686274, a: 1}
 --- !u!1 &1347543346641093074
 GameObject:
   m_ObjectHideFlags: 0
@@ -398,6 +461,7 @@ MonoBehaviour:
   layerToIgnore:
     serializedVersion: 2
     m_Bits: 0
+  bodyOffsetY: 0
 --- !u!1 &2254995555315562780
 GameObject:
   m_ObjectHideFlags: 0
@@ -492,6 +556,7 @@ MonoBehaviour:
   layerToIgnore:
     serializedVersion: 2
     m_Bits: 0
+  bodyOffsetY: 0
 --- !u!1 &2594230208906952747
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,6 +588,38 @@ Transform:
   m_Children:
   - {fileID: 1415543249062444710}
   m_Father: {fileID: 534773361234748708}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2927014203817894718
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5399956490165686425}
+  m_Layer: 0
+  m_Name: FocusRotationPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5399956490165686425
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2927014203817894718}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.315, z: 1.006}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 7199308766874411282}
+  m_Father: {fileID: 8799593802471166313}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2958855749681953390
 GameObject:
@@ -623,6 +720,7 @@ Transform:
   - {fileID: 298052703632246188}
   - {fileID: 4247203090743950133}
   - {fileID: 7107588674786890351}
+  - {fileID: 5399956490165686425}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7225058451224398841
@@ -658,11 +756,12 @@ MonoBehaviour:
   runStepMultiplier: 3
   legOvershootFactor: 0.5
   startMovingDelay: 0.1
-  updateBodyInterval: 0.3
+  updateBodyInterval: 0.1
   bodyOffsetY: 0.35
   layerToIgnore:
     serializedVersion: 2
     m_Bits: 0
+  bodyTarget: {fileID: 7199308766874411282}
 --- !u!95 &3880958896239742108
 Animator:
   serializedVersion: 7
@@ -928,6 +1027,7 @@ MonoBehaviour:
   layerToIgnore:
     serializedVersion: 2
     m_Bits: 0
+  bodyOffsetY: 0
 --- !u!1 &3902512547670653291
 GameObject:
   m_ObjectHideFlags: 0
@@ -1949,6 +2049,7 @@ MonoBehaviour:
   layerToIgnore:
     serializedVersion: 2
     m_Bits: 0
+  bodyOffsetY: 0
 --- !u!1 &8261884538452757704
 GameObject:
   m_ObjectHideFlags: 0
