@@ -36,7 +36,7 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
     private List<MovableIKBone> legsMovingFirst, legsMovingSecond;
     private int firstPlacedCount = 0, secondPlacedCount = 0;
 
-    public float maxLegHomeDistance = 0.6f, stepDuration = 0.5f, runStepMultiplier = 3.0f;
+    public float maxLegHomeDistance = 0.6f, stepDuration = 0.5f, runStepMultiplier = 3.0f, stepHeightMultiplier = 1.0f;
     private float currentMaxLegDistance = 1.0f;
 
     [Range(0.0f, 0.99f)]
@@ -168,7 +168,7 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
                 Transf3D.PositionOnTheGround(ref endPosition, 1.5f);
 
                 posLock.Anchor = false;
-                movement = StartCoroutine(Transf3D.MoveOverTimeQuadratic(bone.targetIK, stepDuration, bone.targetIK.position, endPosition));
+                movement = StartCoroutine(Transf3D.MoveOverTimeQuadratic(bone.targetIK, stepDuration, bone.targetIK.position, endPosition, stepHeightMultiplier));
 
                 yield return movement;
                 posLock.Anchor = true;

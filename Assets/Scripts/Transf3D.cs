@@ -71,10 +71,10 @@ public static class Transf3D
     }
 
     /// <summary> global position </summary>
-    public static IEnumerator MoveOverTimeQuadratic(Transform bone, float duration, Vector3 startPosition, Vector3 endPosition, bool easingInOut = false)
+    public static IEnumerator MoveOverTimeQuadratic(Transform bone, float duration, Vector3 startPosition, Vector3 endPosition, float centerMultiplierY = 1.0f, bool easingInOut = false)
     {
         Vector3 centerPosition = (endPosition + startPosition) * 0.5f;
-        centerPosition += (Vector3.up * Vector3.Distance(startPosition, endPosition));
+        centerPosition += (Vector3.up * Vector3.Distance(startPosition, endPosition) * centerMultiplierY);
 
         float elapsedTime = 0.0f;
         float t = 0.0f;
