@@ -5,7 +5,7 @@ public class SurfaceSticker : MonoBehaviour
     private Transform restPosition;
     private RaycastHit hit;
     private Vector3 targetPosition;
-    public LayerMask layerToIgnore;
+    public LayerMask layerToIgnore = Physics.IgnoreRaycastLayer;
     public float bodyOffsetY;
 
     private void Start()

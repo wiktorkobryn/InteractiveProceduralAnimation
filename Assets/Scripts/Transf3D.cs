@@ -50,8 +50,8 @@ public static class Transf3D
         }
     }
 
-    /// <summary> global position </summary>
-    public static IEnumerator MoveOverTimeLinear(Transform bone, float duration, Vector3 startPosition, Vector3 endPosition, bool easingInOut = false)
+    /// <summary> local/global position </summary>
+    public static IEnumerator MoveOverTimeLinear(Transform bone, float duration, Vector3 startPosition, Vector3 endPosition, bool easingInOut = false, bool global = true)
     {
         float elapsedTime = 0.0f;
         float t = 0.0f;
@@ -63,7 +63,11 @@ public static class Transf3D
             if (easingInOut)
                 t = Mathf.SmoothStep(0.0f, 1.0f, t);
 
-            bone.transform.position = Vector3.Lerp(startPosition, endPosition, t);
+            if(global)
+                bone.transform.position = Vector3.Lerp(startPosition, endPosition, t);
+            else
+                bone.transform.localPosition = Vector3.Lerp(startPosition, endPosition, t);
+
             elapsedTime += Time.deltaTime;
 
             yield return new WaitForEndOfFrame();

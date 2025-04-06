@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 4425855319206269485}
   - component: {fileID: 2696122487809559751}
   - component: {fileID: 7301791559115038933}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: QuadrupedWalkerPushable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,8 +129,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.6, y: 0.4, z: 0.6}
-  m_Center: {x: 0, y: 1.2, z: 0}
+  m_Size: {x: 0.6, y: 0.38, z: 0.8}
+  m_Center: {x: 0, y: 0.41, z: 0}
 --- !u!54 &7301791559115038933
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -389,23 +389,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 793461468052560707, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.057311058
+      value: 0.057311445
       objectReference: {fileID: 0}
     - target: {fileID: 793461468052560707, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: -0.8666425
+      value: -0.86664236
+      objectReference: {fileID: 0}
+    - target: {fileID: 1697582938503089842, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: layerToIgnore.m_Bits
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061715383860386225, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: layerToIgnore.m_Bits
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3136712073290323293, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].x
-      value: 0.9360012
+      value: 0.9360011
       objectReference: {fileID: 0}
     - target: {fileID: 3136712073290323293, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.5054388
+      value: 0.5054389
       objectReference: {fileID: 0}
     - target: {fileID: 3136712073290323293, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: -0.7641624
+      value: -0.7641623
       objectReference: {fileID: 0}
     - target: {fileID: 3407243340499206497, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_Name
@@ -413,19 +421,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3743341396219719845, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.49731064
+      value: 0.49731135
       objectReference: {fileID: 0}
     - target: {fileID: 3743341396219719845, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: -0.86664355
+      value: -0.8666434
+      objectReference: {fileID: 0}
+    - target: {fileID: 3872243320897504927, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: layerToIgnore.m_Bits
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5029008029335059434, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2c6e2d1c567943c4eb5dedb2f5c4d462, type: 2}
+    - target: {fileID: 6685582079614260076, guid: 10e210d553521214189584f14271a53f, type: 3}
+      propertyPath: layerToIgnore.m_Bits
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8739831543923141679, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.057311058
+      value: 0.05731091
       objectReference: {fileID: 0}
     - target: {fileID: 8739831543923141679, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: -0.86664414
+      value: -0.866644
       objectReference: {fileID: 0}
     - target: {fileID: 8799593802471166313, guid: 10e210d553521214189584f14271a53f, type: 3}
       propertyPath: m_LocalPosition.x
