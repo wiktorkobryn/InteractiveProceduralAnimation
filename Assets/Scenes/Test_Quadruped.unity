@@ -747,7 +747,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 524086286085020436, guid: 4ef678a7961c1f04ba0125e53162fc58, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.76
+      value: 2.09
       objectReference: {fileID: 0}
     - target: {fileID: 524086286085020436, guid: 4ef678a7961c1f04ba0125e53162fc58, type: 3}
       propertyPath: m_LocalPosition.y
@@ -788,6 +788,10 @@ PrefabInstance:
     - target: {fileID: 868698984895480238, guid: 4ef678a7961c1f04ba0125e53162fc58, type: 3}
       propertyPath: m_Name
       value: piston (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1085771241374607213, guid: 4ef678a7961c1f04ba0125e53162fc58, type: 3}
+      propertyPath: pushKey
+      value: 111
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
