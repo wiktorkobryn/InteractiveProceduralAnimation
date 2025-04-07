@@ -131,17 +131,21 @@ public class WalkerController : MonoBehaviour, IObservable
                 State = WalkerState.Idle;
                 NotifyObservers();
             }
-            else if (State == WalkerState.Move && IsAnyInput() && IsNotRotating() && Input.GetKey(KeyCode.LeftShift))  // start sprinting
+            else if (IsAnyInput())
             {
-                currentMovSpeed = movementSpeed * speedMultiplier;
-                State = WalkerState.MoveFast;
-                NotifyObservers();
-            }
-            else if (IsAnyInput() && State != WalkerState.Move)   // start moving
-            {
-                currentMovSpeed = movementSpeed;
-                State = WalkerState.Move;
-                NotifyObservers();
+                if (State == WalkerState.Idle ||                                                    // start moving
+                    (State == WalkerState.MoveFast && Input.GetKeyDown(KeyCode.LeftShift)))         // stop sprinting
+                {
+                    currentMovSpeed = movementSpeed;
+                    State = WalkerState.Move;
+                    NotifyObservers();
+                }
+                else if(State == WalkerState.Move && IsNotRotating() && Input.GetKeyDown(KeyCode.LeftShift))    // start sprinting
+                {
+                    currentMovSpeed = movementSpeed * speedMultiplier;
+                    State = WalkerState.MoveFast;
+                    NotifyObservers();
+                }
             }
         }
     }
