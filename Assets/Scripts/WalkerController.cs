@@ -119,7 +119,7 @@ public class WalkerController : MonoBehaviour, IObservable
         return movementHorizontal != 0 || movementVerical != 0 || Input.GetKey(KeyCode.Q) || Input.GetKey(KeyCode.E);
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (State != WalkerState.Off)
         {
