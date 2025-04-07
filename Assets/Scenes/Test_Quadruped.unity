@@ -652,34 +652,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 535225770231558907, guid: a615813aa17442b45b666ed840cf0099, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.057311058
-      objectReference: {fileID: 0}
-    - target: {fileID: 535225770231558907, guid: a615813aa17442b45b666ed840cf0099, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: -0.8666425
-      objectReference: {fileID: 0}
-    - target: {fileID: 2875731990120037605, guid: a615813aa17442b45b666ed840cf0099, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].x
-      value: 0.9360012
-      objectReference: {fileID: 0}
-    - target: {fileID: 2875731990120037605, guid: a615813aa17442b45b666ed840cf0099, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.5054388
-      objectReference: {fileID: 0}
-    - target: {fileID: 2875731990120037605, guid: a615813aa17442b45b666ed840cf0099, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: -0.7641624
-      objectReference: {fileID: 0}
-    - target: {fileID: 4583667345981053213, guid: a615813aa17442b45b666ed840cf0099, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.49731064
-      objectReference: {fileID: 0}
-    - target: {fileID: 4583667345981053213, guid: a615813aa17442b45b666ed840cf0099, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: -0.86664355
-      objectReference: {fileID: 0}
     - target: {fileID: 5490801214667411006, guid: a615813aa17442b45b666ed840cf0099, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.38706493
@@ -723,14 +695,6 @@ PrefabInstance:
     - target: {fileID: 8026538895185381099, guid: a615813aa17442b45b666ed840cf0099, type: 3}
       propertyPath: m_Name
       value: QuadrupedWalkerPushable
-      objectReference: {fileID: 0}
-    - target: {fileID: 8441274551324116375, guid: a615813aa17442b45b666ed840cf0099, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].y
-      value: 0.057311058
-      objectReference: {fileID: 0}
-    - target: {fileID: 8441274551324116375, guid: a615813aa17442b45b666ed840cf0099, type: 3}
-      propertyPath: m_TranslationOffsets.Array.data[0].z
-      value: -0.86664414
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

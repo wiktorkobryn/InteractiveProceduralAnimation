@@ -5,49 +5,46 @@ using System.Linq;
 using System.Xml.Serialization;
 using UnityEngine;
 
-public enum WalkerState
-{
-    Off = 0,
-    Idle,
-    Move,
-    MoveFast
-}
-
-[Serializable]
-public class MovableIKBone
-{
-    public Transform targetIK, homeMarker;
-    public bool CanMove { get; set; } = false;
-}
-
 public class ProceduralWalker : MonoBehaviour, IObserver<int>
 {
     public WalkerState State { get; private set; } = WalkerState.Off;
 
-    public Transform bodyBone, bodyBoneRest;
-    public float maxBodyMoveDistance = 0.2f;
+    [Header("General")]
+    [Range(0f, 5f)]
+    public float startMovingDelay = 0.1f;
+    public LayerMask layerToIgnore;
 
+    [Header("Movement: Legs")]
+    public float maxLegHomeDistance = 0.6f;
+    private float currentMaxLegDistance = 1.0f;
+    [Range(0.01f, 5f)]
+    public float stepDuration = 0.5f;
+    [Range(1f, 5f)]
+    public float runStepMultiplier = 3.0f;
+    [Range(0f, 5f)]
+    public float stepHeightMultiplier = 1.0f;
+    [Range(0.0f, 0.99f)]
+    public float legOvershootFactor = 0.5f;
+
+    public List<MovableIKBone> leftLegs, rightLegs;
+    private List<MovableIKBone> legsMovingFirst, legsMovingSecond;
+    private int firstPlacedCount = 0, secondPlacedCount = 0;
+
+    [Header("State: Idle")]
+    public float maxBodyMoveDistance = 0.2f;
     public Vector3 idleAnimationAxis = new Vector3(0, 0, 1);
     public float idleMovementAmplitude = 0.3f,
                  idleMovementFrequency = 1.5f;
 
-    public List<MovableIKBone> leftLegs, rightLegs;
+    [Header("Movement: Body")]
+    public Transform bodyBone;
+    public Transform bodyBoneRest;
 
-    private List<MovableIKBone> legsMovingFirst, legsMovingSecond;
-    private int firstPlacedCount = 0, secondPlacedCount = 0;
-
-    public float maxLegHomeDistance = 0.6f, stepDuration = 0.5f, runStepMultiplier = 3.0f, stepHeightMultiplier = 1.0f;
-    private float currentMaxLegDistance = 1.0f;
-
-    [Range(0.0f, 0.99f)]
-    public float legOvershootFactor = 0.5f;
-    public float startMovingDelay = 0.1f;
-
+    [Range(0f, 5f)]
     public float updateBodyInterval = 0.2f;
     public float bodyOffsetY = 0.0f;
-    public LayerMask layerToIgnore;
 
-    private Coroutine idleAnimation = null, bodyMovement = null;
+    private Coroutine idleAnimation = null, bodyMovement = null, bodyRotation = null;
 
 
     protected void Start()
@@ -56,7 +53,6 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
         legsMovingSecond = new List<MovableIKBone>();
 
         StartCoroutine(StartWalkingAfterDelay());
-        StartCoroutine(RotateBodyToPlane());
     }
 
     protected void OnStateChanged()
@@ -80,6 +76,7 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
                     break;
                 case WalkerState.Move:
                     bodyMovement = StartCoroutine(PositionBody());
+                    bodyRotation = StartCoroutine(RotateBodyToPlane());
                     break;
             }
         }
@@ -91,6 +88,8 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
             StopCoroutine(bodyMovement);
         if (idleAnimation != null)
             StopCoroutine(idleAnimation);
+        if (bodyRotation != null)
+            StopCoroutine(bodyRotation);
     }
 
     private void SetLegGroups()

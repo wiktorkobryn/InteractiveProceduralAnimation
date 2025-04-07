@@ -10,6 +10,9 @@ public class WalkerController : MonoBehaviour, IObservable
 {
     public WalkerState State { get; private set; }
 
+    [Header("General")]
+    public bool isActive = true;
+    protected bool isActiveBeforeChange = false;
     public Transform raycastPoint, walkerBody;
     public float bodyOffsetY;
     public LayerMask layerToIgnore;
@@ -20,13 +23,14 @@ public class WalkerController : MonoBehaviour, IObservable
 
     [Header("Movement")]
     public float movementSpeed = 20.0f;
-    public float rotationSpeed = 20.0f, speedMultiplier = 2.0f;
+    public float rotationSpeed = 20.0f;
+    [Range(1f, 5f)]
+    public float speedMultiplier = 2.0f;
     private float currentMovSpeed = 20.0f;
     private float movementVerical, movementHorizontal;
 
+    [Header("Observable")]
     public List<GameObject> observers = new List<GameObject>();
-    public bool isActive = true;
-    protected bool isActiveBeforeChange = false;
 
     private void Start()
     {
