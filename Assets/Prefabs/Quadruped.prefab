@@ -735,12 +735,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd63bbc21a6093c4986bd401aa766352, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodyBone: {fileID: 3765627669985736681}
-  bodyBoneRest: {fileID: 4397157109787032146}
-  maxBodyMoveDistance: 0.2
-  idleAnimationAxis: {x: 0, y: 0, z: 1}
-  idleMovementAmplitude: 0.0005
-  idleMovementFrequency: 0.3
+  startMovingDelay: 0.1
+  layerToIgnore:
+    serializedVersion: 2
+    m_Bits: 4
+  maxLegHomeDistance: 0.2
+  stepDuration: 0.3
+  runStepMultiplier: 3
+  stepHeightMultiplier: 1
+  legOvershootFactor: 0.5
   leftLegs:
   - targetIK: {fileID: 7572554167492005732}
     homeMarker: {fileID: 1415543249062444710}
@@ -751,17 +754,14 @@ MonoBehaviour:
     homeMarker: {fileID: 3766965706762762658}
   - targetIK: {fileID: 208322140051315697}
     homeMarker: {fileID: 3624803925564866278}
-  maxLegHomeDistance: 0.2
-  stepDuration: 0.3
-  runStepMultiplier: 3
-  stepHeightMultiplier: 1
-  legOvershootFactor: 0.5
-  startMovingDelay: 0.1
-  updateBodyInterval: 0.1
+  maxBodyMoveDistance: 0.2
+  idleAnimationAxis: {x: 0, y: 0, z: 1}
+  idleMovementAmplitude: 0.0005
+  idleMovementFrequency: 0.3
+  bodyBone: {fileID: 3765627669985736681}
+  bodyBoneRest: {fileID: 4397157109787032146}
+  updateBodyInterval: 0.3
   bodyOffsetY: 0.35
-  layerToIgnore:
-    serializedVersion: 2
-    m_Bits: 4
   bodyTarget: {fileID: 7199308766874411282}
 --- !u!95 &3880958896239742108
 Animator:

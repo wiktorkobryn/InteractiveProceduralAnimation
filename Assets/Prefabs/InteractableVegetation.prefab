@@ -1,5 +1,51 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &15239032591535510
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5500195342425628129}
+  - component: {fileID: 9011710594156875587}
+  m_Layer: 0
+  m_Name: lookAtRest
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5500195342425628129
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 15239032591535510}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.00000008940697, y: 3.8656697e-14, z: -3.86567e-14, w: 1}
+  m_LocalPosition: {x: 0, y: 0.76199985, z: 0}
+  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7350216714030296502}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9011710594156875587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 15239032591535510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bb380406aacc234194faa41c1ada94d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 0.06
+  color: {r: 0.6763795, g: 1, b: 0.015686274, a: 1}
 --- !u!1 &1514231389941457252
 GameObject:
   m_ObjectHideFlags: 0
@@ -251,6 +297,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7350216714030296502}
   - component: {fileID: 7114423391782254542}
+  - component: {fileID: 2736318508888260010}
   m_Layer: 0
   m_Name: InteractableVegetation
   m_TagString: Untagged
@@ -273,6 +320,7 @@ Transform:
   m_Children:
   - {fileID: 8791818631895453209}
   - {fileID: 2439676690825176881}
+  - {fileID: 5500195342425628129}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7114423391782254542
@@ -287,3 +335,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18565fc20e252c0459ec56bda971d1c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectionLayerName: Detectable
+  bodyBone: {fileID: 7989763632581631941}
+  lookAtRest: {fileID: 5500195342425628129}
+  swayWeight: 3
+  maxSwayDistance: 0.6
+  observers: []
+--- !u!65 &2736318508888260010
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7875361453058455308}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0.48, z: 0}

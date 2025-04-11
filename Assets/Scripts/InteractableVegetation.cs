@@ -21,7 +21,12 @@ public class InteractableVegetation : MonoBehaviour, IObservable, IStateMachine
 
     protected GameObject collidingObject;
     [Header("General")]
-    public LayerMask detectionLayer;
+    public String detectionLayerName = "Detectable";
+    public Transform bodyBone, lookAtRest;
+    private float bodyBoneRestRotY = 0.0f;
+    [Range(0.01f, 30.0f)]
+    public float swayWeight = 1.0f;
+    public float maxSwayDistance = 0.6f;
 
     [Header("Animation: Idle")]
     float randomizationFactor = 1.0f; // changes max bound: max
@@ -52,7 +57,7 @@ public class InteractableVegetation : MonoBehaviour, IObservable, IStateMachine
                 StartCoroutine(IdleAnimation());
                 break;
             case InteractableState.Colliding:
-                StartCoroutine(PushAwayFromCollided());
+                StartCoroutine(PushAway());
                 break;
         }
 
@@ -62,19 +67,39 @@ public class InteractableVegetation : MonoBehaviour, IObservable, IStateMachine
 
     private IEnumerator IdleAnimation()
     {
-        yield return null;
+        bodyBone.LookAt(lookAtRest);
+        bodyBone.Rotate(90, 0, 0);
+
+        yield return new WaitForEndOfFrame();
     }
 
-    private IEnumerator PushAwayFromCollided()
+    private IEnumerator PushAway()
     {
-        yield return null;
+        Vector3 direction, target;
+        float distance, swayFactor;
+
+        while (true)
+        {
+            direction = lookAtRest.position - collidingObject.transform.position;
+            distance = direction.magnitude;
+
+            // % value of distance between [0; maxSwayDistance]
+            swayFactor = Mathf.InverseLerp(maxSwayDistance, 0.0f, distance);
+
+            target = lookAtRest.position + direction.normalized * swayFactor * maxSwayDistance * swayWeight;
+
+            bodyBone.LookAt(target);
+            //bodyBone.Rotate(90, 0, 0);
+
+            yield return new WaitForEndOfFrame();
+        }
     }
 
     #region collision_detection
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == detectionLayer && collidingObject != other.gameObject)
+        if (other.gameObject.layer == LayerMask.NameToLayer(detectionLayerName) && collidingObject != other.gameObject)
         {
             collidingObject = other.gameObject;
 
@@ -85,7 +110,7 @@ public class InteractableVegetation : MonoBehaviour, IObservable, IStateMachine
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.layer == detectionLayer && collidingObject == other.gameObject)
+        if (other.gameObject.layer == LayerMask.NameToLayer(detectionLayerName) && collidingObject == other.gameObject)
         {
             State = InteractableState.Idle;
             stateChanged = true;

@@ -46,7 +46,6 @@ public class ProceduralWalker : MonoBehaviour, IObserver<int>
 
     private Coroutine idleAnimation = null, bodyMovement = null, bodyRotation = null;
 
-
     protected void Start()
     {
         legsMovingFirst = new List<MovableIKBone>();
