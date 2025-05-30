@@ -12,7 +12,9 @@ public static class Transf3D
     #region cotoutines
 
     /// <summary> local/global rotation </summary>
-    public static IEnumerator RotateOverTime(Transform bone, float duration, Quaternion startRotation, Quaternion endRotation, bool easingInOut = false, bool global = false)
+    public static IEnumerator RotateOverTime(Transform bone, float duration,
+                                            Quaternion startRotation, Quaternion endRotation,
+                                             bool easingInOut = false, bool global = false)
     {
         float elapsedTime = 0.0f;
         float t = 0.0f;
